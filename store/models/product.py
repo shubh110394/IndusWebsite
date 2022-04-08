@@ -11,5 +11,10 @@ class Product(models.Model):
     image = models.ImageField(upload_to = "products/")
 
     @staticmethod
+    def get_all_products_by_id(ids):
+        return Product.objects.filter(id__in = ids) #to match a list we use id__in
+        #this means all the ids that list contains are filtered out and returned
+
+    @staticmethod
     def get_all_products():
         return Product.objects.all()

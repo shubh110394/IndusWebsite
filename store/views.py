@@ -1,5 +1,6 @@
 from distutils.log import error
 import email
+from itertools import product
 from wsgiref import validate
 from django.shortcuts import render, redirect
 from django.contrib.auth.hashers import make_password, check_password
@@ -14,23 +15,36 @@ from django.views import View
 
 class Index(View):
     def get(self, request):
-        # request.session.get("cart").clear()
+        cart = request.session.get("cart")
+        if not cart:
+            request.session['cart'] = {}
         products = Product.get_all_products()
+        # products = None
         categories = Category.get_all_categories()
+        # categoryId = request.GET.get('category')
+        # if categoryId:
+        #     Product.get_all_products()
 
         data = {}
         data['products'] = products
         data['categories'] = categories
-        print('you are:', request.session.get('email'))
+        # print('you are:', request.session.get('email'))
         return render(request, 'index.html', data)
 
     def post(self,request):
         product = request.POST.get('product')
+        remove = request.POST.get('remove')
         cart = request.session.get("cart")
         if cart:
             quantity = cart.get(product)
             if quantity:
-                cart[product] = quantity + 1
+                if remove:
+                    if quantity<=1:
+                        cart.pop(product)
+                    else:
+                        cart[product] = quantity - 1
+                else:
+                    cart[product] = quantity + 1
             else:
                 cart[product] = 1
 
@@ -39,7 +53,7 @@ class Index(View):
             cart[product] = 1
 
         request.session['cart'] = cart
-        print("cart:",request.session['cart'])
+        # print("cart:",request.session['cart'])
 
         # print('product',product)
         return redirect("homepage")
@@ -141,8 +155,8 @@ class Login(View):
         if customer:
             flag = check_password(password, customer.password)
             if flag:
-                request.session['customer_id'] = customer.id
-                request.session['email'] = customer.email
+                request.session['customer'] = customer.id
+                # request.session['email'] = customer.email ##we commented this coz customer id is enough due to its uniqueness
                 return redirect("homepage")
             else:
                 error_message = "email or password invalid"
@@ -152,7 +166,9 @@ class Login(View):
         print(customer)
         return render(request, 'login.html', {"error": error_message})
 
-
+def logout(request):
+    request.session.clear()
+    return redirect("login")
 # def login(request):
 #     if request.method == "GET":
 #         return render(request,'login.html')
@@ -174,3 +190,11 @@ class Login(View):
 
 #         print(customer)
 #         return render(request,'login.html',{"error":error_message})
+
+class Cart(View):
+    def get(self, request):
+        # print(list(request.session.get("cart")))
+        ids = list(request.session.get("cart"))
+        products = Product.get_all_products_by_id(ids)
+        print(products)
+        return render(request, 'cart.html',{'products':products})

@@ -1,6 +1,6 @@
 from unicodedata import name
 from django.urls import path
-from .views import Index,Login,SignUp,logout,Cart,CheckOut
+from .views import Index,Login,SignUp,logout,Cart,CheckOut,Orders
 
 urlpatterns = [
     path("",Index.as_view(),name='homepage'),
@@ -8,6 +8,7 @@ urlpatterns = [
     path("login/",Login.as_view(),name="login"),
     path("logout/",logout,name="logout"),
     path("cart/",Cart.as_view(),name="cart"),
-    path("check-out",CheckOut.as_view(),name="checkout")
+    path("check-out",CheckOut.as_view(),name="checkout"),
+    path("orders",Orders.as_view(),name="orders")
 
 ]

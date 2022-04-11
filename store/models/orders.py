@@ -14,3 +14,11 @@ class Order(models.Model):
     price = models.IntegerField()
     date = models.DateField(default = datetime.datetime.today)
 
+
+
+    # def place_order(self):
+    #     self.save()
+    @staticmethod
+    def get_orders_by_customer(customer_id):
+        return Order.objects.filter(customer = customer_id)
+

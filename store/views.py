@@ -5,6 +5,8 @@ from wsgiref import validate
 from django.shortcuts import render, redirect
 from django.contrib.auth.hashers import make_password, check_password
 from django.http import HttpResponse
+
+from store.models.orders import Order
 from .models.product import Product
 from .models.category import Category
 from .models.customer import Customer
@@ -202,6 +204,28 @@ class Cart(View):
 
 class CheckOut(View):
     def post(self, request):
-        print(request.POST)
+        address = request.POST.get('address')# request.Post gives the value whose key is address
+        phone = request.POST.get('phone')
+        customer = request.session.get('customer')
+        cart = request.session.get('cart')
+        products =  Product.get_all_products_by_id(list(cart.keys()))
+        print(address,phone,customer,cart,products)
+
+        for product in products:
+            order = Order(customer = Customer(id = customer),product = product ,price = product.price,address = address,phone = phone,quantity = cart.get(str(product.id))) 
+            order.save()
+
+            # print(order.place_order())
+        request.session['cart'] = {}
+
+
+
         return redirect("cart")
 
+class Orders(View):
+    def get(self,request):
+        #for finding out which customer is trying to checkout
+        customer = request.session.get("customer")
+        orders = Order.get_orders_by_customer(customer)#taking from model Order
+        # print(orders)
+        return render(request,'orders.html',{'orders':orders})

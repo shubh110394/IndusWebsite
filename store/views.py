@@ -196,5 +196,12 @@ class Cart(View):
         # print(list(request.session.get("cart")))
         ids = list(request.session.get("cart"))
         products = Product.get_all_products_by_id(ids)
-        print(products)
+        # print(products)
         return render(request, 'cart.html',{'products':products})
+
+
+class CheckOut(View):
+    def post(self, request):
+        print(request.POST)
+        return redirect("cart")
+

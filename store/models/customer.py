@@ -15,6 +15,10 @@ class Customer(models.Model):
             return Customer.objects.get(email = email)
         except:
             return False
+
+    @staticmethod
+    def user_name(id):
+        print("id",id)
         
 
 

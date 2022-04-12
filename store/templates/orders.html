@@ -8,6 +8,11 @@
         <!-- {{products}} -->
         <h2 class="display-4 bg-success text-white text-center pl-4 ml-4">Your Orders</h2>
         <hr>
+        <div class="m-3 p-3">
+            <a href="payment" class="btn btn-outline-info border rounded col-lg-2 float-end">
+                Order id:
+            </a>
+        </div>
 
         <table class="table">
             <thead>
@@ -16,23 +21,41 @@
                     <th>Image</th>
                     <th>Product</th>
                     <th>Price</th>
+                    <th>Date of Order</th>
                     <th>Quantity</th>
                     <th>Total</th>
+                    <th>Status</th>
                 </tr>
             </thead>
             <tbody>
                 {%for order in orders%}
-                <tr>
+                <tr >
                     <td>{{forloop.counter}}</td>
                     <td><img style="height: 80px;" class="rounded-circle" src="{{order.product.image.url}}" alt=""></td>
                     <td>{{order.product.name}}</td>
                     <td>{{order.price}}</td>
+                    <td>{{order.date}}</td>
                     <td>{{order.quantity}}</td>
                     <td>{{order.quantity|multiply:order.price}}</td>
+                    <!-- <td>{{order.status}}</td> -->
+                    {% if order.status %}
+                    <td class="badge bg-success mt-2">Completed</td>
+                    <!-- <td>Completed</td> -->
+                    {%else%}
+                    <!-- <td><small class="badge badge-warning">Pending</small></td> -->
+                    <td class="badge bg-danger mt-2" >Pending</td>
+                    {% endif %}
+                    
+
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
+        <div class="m-3 p-3">
+            <a href="payment" class="btn btn-outline-info border rounded col-lg-2 float-end">
+                Proceed to Payment
+            </a>
+        </div>
     </div>
 
 </div>

@@ -2,7 +2,7 @@ from distutils.log import error
 import email
 from itertools import product
 from wsgiref import validate
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,HttpResponseRedirect
 from django.contrib.auth.hashers import make_password, check_password
 from django.http import HttpResponse
 
@@ -11,6 +11,8 @@ from .models.product import Product
 from .models.category import Category
 from .models.customer import Customer
 from django.views import View
+# from django.utils.decorators import method_decorator
+# from store.middlewares.auth import auth_middleware
 
 
 # Create your views here.
@@ -145,7 +147,9 @@ class SignUp(View):
 
 
 class Login(View):
+    return_url = None
     def get(self, request):
+        Login.return_url = request.GET.get('return_url')
         return render(request, 'login.html')
 
     def post(self, request):
@@ -159,7 +163,11 @@ class Login(View):
             if flag:
                 request.session['customer'] = customer.id
                 # request.session['email'] = customer.email ##we commented this coz customer id is enough due to its uniqueness
-                return redirect("homepage")
+                if Login.return_url:
+                    return HttpResponseRedirect(Login.return_url)
+                else:
+                    Login.return_url= None
+                    return redirect("homepage")
             else:
                 error_message = "email or password invalid"
         else:
@@ -195,10 +203,20 @@ def logout(request):
 
 class Cart(View):
     def get(self, request):
-        # print(list(request.session.get("cart")))
+        # print(list(request.session.get("customer")))
+        # print(request.session.get("customer"))
+        # if request.session.get("customer") == None:
+        #     return redirect("login")
+        # else:
+        #     if request.session.get("cart") == None:
+        #         return render(request, 'cart.html')
+        #     else:
+        #         ids = list(request.session.get("cart"))
+        #         products = Product.get_all_products_by_id(ids)
+        #         # print(products)
+        #         return render(request, 'cart.html',{'products':products})
         ids = list(request.session.get("cart"))
         products = Product.get_all_products_by_id(ids)
-        # print(products)
         return render(request, 'cart.html',{'products':products})
 
 
@@ -220,12 +238,19 @@ class CheckOut(View):
 
 
 
-        return redirect("cart")
+        return redirect("orders")
 
 class Orders(View):
+
+    # @method_decorator(auth_middleware)
     def get(self,request):
         #for finding out which customer is trying to checkout
         customer = request.session.get("customer")
         orders = Order.get_orders_by_customer(customer)#taking from model Order
         # print(orders)
         return render(request,'orders.html',{'orders':orders})
+
+
+class Payment(View):
+    def get(self,request):
+        return render(request,'payment.html')

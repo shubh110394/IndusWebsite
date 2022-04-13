@@ -1,23 +1,119 @@
 {% extends 'base.html' %}
 
 {%block content%}
+{%load cart%}
 
-<div class="row mt-5 mx-auto">
-    <div class="col-sm-6">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">Special title treatment</h5>
-          <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-        </div>
-      </div>
-    </div>
-    <div class="col-sm-6">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">Special title treatment</h5>
-          <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-        </div>
+<div class="row mt-5 mx-auto d-flex justify-content-center">
+  <div class="col-lg-6 ">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title mb-3">Choose any one payment method</h5>
+        <!-- <p class="card-text">With supporting text below as a natural lead-in to additional content.</p> -->
+        <form action="" method="POST">
+          {%csrf_token%}
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="radio" name="flexRadioDefault" value="Card Payment" id="flexRadioDefault1">
+            <label class="form-check-label" for="flexRadioDefault1">
+              Add Debit/Credit/Atm card
+            </label>
+          </div>
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value="Cash" checked>
+            <label class="form-check-label" for="flexRadioDefault2">
+              Select UPI app
+            </label>
+          </div>
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value="Cash" checked>
+            <label class="form-check-label" for="flexRadioDefault2">
+              Net Banking
+            </label>
+          </div>
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value="Cash" checked>
+            <label class="form-check-label" for="flexRadioDefault2">
+              Pay on Delivery
+            </label>
+          </div>
+
+
+        </form>
+
+
+        <!-- end of radio logic -->
       </div>
     </div>
   </div>
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title ">Customer Bill</h5>
+        <ul class="list-group">
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            Product Name
+            <span class="badge text-primary">{{product.name}}</span>
+          </li>
+
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            Order Date
+            <span class="badge text-primary">{{date}}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            OrderID
+            <span class="badge text-primary">{{orderId}}</span>
+          </li>
+        </ul>
+
+        <ul class="list-group mt-4">
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            Gross Total
+            <span class="badge text-primary">{{total}} INR</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            Shipping and packing charges
+            <span class="badge text-primary">100 INR</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            Taxes @12%
+            <span class="badge text-primary">{{tax}} INR</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            Amount to be paid(Inclusive of taxes)
+            <span class="badge text-primary">{{toPay}} INR</span>
+          </li>
+        </ul>
+        <input type="submit" name="" id="" data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn btn-outline-info fs-3 text  border rounded col-lg-8  mt-3"
+        value="Place order and Pay">
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- modal -->
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white text-center">
+        <h2 class="modal-title " id="exampleModalLabel">Congratulations</h2>
+
+
+        <hr>
+        <a href="/"><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></a>
+      </div>
+      <h5 class="text-success text-center mt-3">Your Order was placed</h5>
+      <div class="modal-body text-center text-info">
+        <div class="m-2 p-3">
+        
+          <h4>Total Amount Paid {{toPay}}INR</h4>
+        </div>
+      </div>
+      <a class="btn btn-info col-lg-5 mx-auto mb-3" href="/">Go to homepage</a>
+    </div>
+  </div>
+</div>
+
+
+
 {%endblock%}

@@ -1,4 +1,5 @@
 import email
+from email.policy import default
 from django.db import models
 from .product import Product
 from .customer import Customer
@@ -14,6 +15,7 @@ class Order(models.Model):
     price = models.IntegerField()
     date = models.DateField(default = datetime.datetime.today)
     status = models.BooleanField(default=False)
+    order_id = models.IntegerField(default=0)
 
 
 

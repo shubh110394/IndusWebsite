@@ -4,69 +4,70 @@
 {%load cart%}
 
 <div class="container">
-    <div class="border rounded p-4 m-4">
-        <!-- {{products}} -->
-        <h2 class="display-4 bg-primary text-white text-center pl-4 ml-4">Your Cart</h2>
-        <hr>
+  <div class="border rounded p-4 m-4">
+    <!-- {{products}} -->
+    <h2 class="display-4 bg-primary text-white text-center pl-4 ml-4">Your Cart</h2>
+    <hr>
 
-        {% if not id%}
-        <h1 class="text-center">No items in the cart</h1>
-        {%else%}
+    {% if not id%}
+    <h1 class="text-center">No items in the cart</h1>
+    {%else%}
 
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Sno.</th>
-                    <th>Image</th>
-                    <th>Product</th>
-                    <th>Price</th>
-                    <th>Quantity</th>
-                    <th>Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                {%for product in products%}
-                <tr>
-                    <td>{{forloop.counter}}</td>
-                    <td><img style="height: 80px;" class="rounded-circle" src="{{product.image.url}}" alt=""></td>
-                    <td>{{product.name}}</td>
-                    <td>{{product.price}}</td>
-                    <td>{{product|cart_quantity:request.session.cart}}</td>
-                    <td>{{product|price_total:request.session.cart}}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-            <tfoot>
-                <tr>
-                    <th colspan="4"></th>
-                    <th >Gross Total</th>
-                    <th>{{products|total_cart_price:request.session.cart}}</th>
-                </tr>
-            </tfoot>
-        </table>
-        <div class="m-3 p-3">
-            <a href="#" data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn btn-outline-info border rounded col-lg-2 float-end">
-                Checkout
-            </a>
-        </div>
-        {%endif%}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Sno.</th>
+          <th>Image</th>
+          <th>Product</th>
+          <th>Price</th>
+          <th>Quantity</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {%for product in products%}
+        <tr>
+          <td>{{forloop.counter}}</td>
+          <td><img style="height: 80px;" class="rounded-circle" src="{{product.image.url}}" alt=""></td>
+          <td>{{product.name}}</td>
+          <td>{{product.price}}</td>
+          <td>{{product|cart_quantity:request.session.cart}}</td>
+          <td>{{product|price_total:request.session.cart}}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr>
+          <th colspan="4"></th>
+          <th>Gross Total</th>
+          <th>{{products|total_cart_price:request.session.cart}}</th>
+        </tr>
+      </tfoot>
+    </table>
+    <div class="m-3 p-3">
+      <a href="#" data-bs-toggle="modal" data-bs-target="#exampleModal"
+        class="btn btn-outline-info border rounded col-lg-2 float-end">
+        Checkout
+      </a>
     </div>
+    {%endif%}
+  </div>
 
 </div>
 
 <!-- Button trigger modal -->
-  
-  <!-- Modal -->
-  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Checkout Form</h5>
-          <hr>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <div class="m-2 p-3">
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Checkout Form</h5>
+        <hr>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- <div class="m-2 p-3">
               <form action="/check-out" method="POST">
                   {%csrf_token%}
                   <div class="form-group mb-3">
@@ -79,9 +80,181 @@
                   </div>
                   <input type="submit" class="btn btn-outline-info col-lg-6 float-end" value="Check out"/>
               </form>
+          </div> -->
+
+
+        <!-- address logic -->
+        <div class="border p-3 mb-5">
+          <h5 class="card-title mb-3">Choose any one address</h5>
+          <div class="p-3">
+            <form action="" method="POST">
+              {%csrf_token%}
+
+              <div class="form-check mb-3">
+                <input class="form-check-input" type="radio" name="flexRadioDefault" value="{{dict_val.address1}}"
+                  id="flexRadioDefault1">
+                <label class="form-check-label" for="flexRadioDefault1">
+                  {{dict_val.address1}}
+                </label>
+              </div>
+              <div class="form-check mb-3">
+                <input class="form-check-input" type="radio" name="flexRadioDefault" value="{{dict_val.address2}}"
+                  id="flexRadioDefault2" checked>
+                <label class="form-check-label" for="flexRadioDefault2">
+                  {{dict_val.address2}}
+                </label>
+              </div>
+              <div class="form-check mb-3">
+                <input class="form-check-input" type="radio" name="flexRadioDefault" value="{{dict_val.address3}}"
+                  id="flexRadioDefault3">
+                <label class="form-check-label" for="flexRadioDefault2">
+                  {{dict_val.address3}}
+                </label>
+              </div>
+              <input type="submit" class="btn btn-info">
+            </form>
           </div>
         </div>
+
+        <!-- <hr> -->
+
+        <!-- add address -->
+        <div class="border p-3">
+          <h5>Add addresss</h5>
+          <div class="p-3">
+            <form action="" method="POST">
+              {%csrf_token%}
+              <input type="text" name="address_post1" id="" class="form-control" placeholder=""
+                aria-describedby="helpId">
+              <input type="text" name="phone" id="" class="form-control" placeholder="+91-XXXX"
+                aria-describedby="helpId">
+              <input type="submit" name="" value="Add this address and proceed with it" id="" class="btn btn-dark form-control"
+                placeholder="" aria-describedby="helpId">
+            </form>
+          </div>
+        </div>
+
+
+        <!-- <form action="" method="POST">
+          {%csrf_token%}
+          {% if not dict_val.address1%}
+          <form action="" method="POST">
+            {%csrf_token%}
+            <input type="text" name="address_post1" id="" class="form-control" placeholder="" aria-describedby="helpId">
+            
+            <input type="submit" name="" value="Add this address" id="" class="btn btn-dark form-control" placeholder=""
+              aria-describedby="helpId">
+          </form>
+          {%else%}
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="radio" name="flexRadioDefault" value="{{dict_val.address1}}"
+              id="flexRadioDefault1">
+            <label class="form-check-label" for="flexRadioDefault1">
+              {{dict_val.address1}}
+            </label>
+          </div>
+          {%endif%}
+
+          {% if not dict_val.address2%}
+          <form action="" method="POST">
+            {%csrf_token%}
+            <input type="text" name="address_post2" id="" class="form-control" placeholder="" aria-describedby="helpId">
+            <input type="submit" name="" value="Add this address" id="" class="btn btn-dark form-control" placeholder=""
+              aria-describedby="helpId">
+          </form>
+          {%else%}
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="radio" name="flexRadioDefault" value="{{dict_val.address2}}"
+              id="flexRadioDefault2" checked>
+            <label class="form-check-label" for="flexRadioDefault2">
+              {{dict_val.address2}}
+            </label>
+          </div>
+          {%endif%}
+
+          {%if not dict_val.address3%}
+          <form action="#" method="POST">
+            {%csrf_token%}
+            <input type="text" name="address_post3" id="" class="form-control" placeholder="" aria-describedby="helpId">
+            <input type="submit" name="" value="Add this address" id="" class="btn btn-dark form-control" placeholder=""
+              aria-describedby="helpId">
+          </form>
+          {%else%}
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="radio" name="flexRadioDefault" value="{{dict_val.address3}}"
+              id="flexRadioDefault3">
+            <label class="form-check-label" for="flexRadioDefault2">
+              {{dict_val.address3}}
+            </label>
+          </div>
+          {%endif%}
+          <input type="submit" class="btn btn-dark">
+        </form> -->
+
+
+        <!-- <h5 class="card-title mb-3">Choose any one address</h5>
+
+        <form action="" method="POST">
+          {%csrf_token%}
+          {% if not dict_val.address1%}
+          <form action="" method="POST">
+            {%csrf_token%}
+            <input type="text" name="address_post1" id="" class="form-control" placeholder="" aria-describedby="helpId">
+            <input type="text" name="phone" id="" class="form-control" placeholder="+91-XXXX" aria-describedby="helpId">
+            <input type="submit" name="" value="Add this address" id="" class="btn btn-dark form-control" placeholder=""
+              aria-describedby="helpId">
+          </form>
+          {%else%}
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="radio" name="flexRadioDefault" value="{{dict_val.address1}}"
+              id="flexRadioDefault1">
+            <label class="form-check-label" for="flexRadioDefault1">
+              {{dict_val.address1}}
+            </label>
+          </div>
+          {%endif%}
+
+          {% if not dict_val.address2%}
+          <form action="" method="POST">
+            {%csrf_token%}
+            <input type="text" name="address_post2" id="" class="form-control" placeholder="" aria-describedby="helpId">
+            <input type="submit" name="" value="Add this address" id="" class="btn btn-dark form-control" placeholder=""
+              aria-describedby="helpId">
+          </form>
+          {%else%}
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="radio" name="flexRadioDefault" value="{{dict_val.address2}}"
+              id="flexRadioDefault2" checked>
+            <label class="form-check-label" for="flexRadioDefault2">
+              {{dict_val.address2}}
+            </label>
+          </div>
+          {%endif%}
+
+          {%if not dict_val.address3%}
+          <form action="#" method="POST">
+            {%csrf_token%}
+            <input type="text" name="address_post3" id="" class="form-control" placeholder="" aria-describedby="helpId">
+            <input type="submit" name="" value="Add this address" id="" class="btn btn-dark form-control" placeholder=""
+              aria-describedby="helpId">
+          </form>
+          {%else%}
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="radio" name="flexRadioDefault" value="{{dict_val.address3}}"
+              id="flexRadioDefault3">
+            <label class="form-check-label" for="flexRadioDefault2">
+              {{dict_val.address3}}
+            </label>
+          </div>
+          {%endif%}
+          <input type="submit" class="btn btn-dark">
+        </form> -->
+
+
+
+        <!-- end of radio logic -->
       </div>
     </div>
   </div>
+</div>
 {%endblock%}

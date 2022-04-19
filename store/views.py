@@ -151,6 +151,7 @@ class Login(View):
             flag = check_password(password, customer.password)
             if flag:
                 request.session['customer'] = customer.id
+                request.session['customer_name'] = customer.first_name
                 # request.session['email'] = customer.email ##we commented this coz customer id is enough due to its uniqueness
                 if Login.return_url:
                     return HttpResponseRedirect(Login.return_url)
@@ -179,9 +180,85 @@ class Cart(View):
         if request.session.get("customer") == None:
             return redirect("login")
         else:
+            cus_id = request.session.get("customer")
+            customer = Customer.get_customers_by_id(cus_id)
+            dict_val = {}
+            for cus in customer:
+                # print(cus)
+                dict_val['address1'] = cus.address1
+                dict_val['address2'] = cus.address2
+                dict_val['address3']  = cus.address3
             ids = list(request.session.get("cart"))
             products = Product.get_all_products_by_id(ids)
-            return render(request, 'cart.html', {'products': products, 'id': ids})
+            para = {
+                "dict_val" :dict_val,
+                'products':products,
+                'id':ids
+            }
+            return render(request, 'cart.html', para)
+    def post(self,request):
+        address = None
+        customer = request.session.get("customer")
+        radio_val = None
+        if request.POST.get("flexRadioDefault"):
+            value = request.POST.get("flexRadioDefault")
+            address = value
+            phone = 12345
+            customer = request.session.get('customer')
+            cart = request.session.get('cart')
+            products = Product.get_all_products_by_id(list(cart.keys()))
+            print("address", phone, customer, cart, products)
+            order_id = r.randint(1000000000, 9000000000)
+
+            for product in products:
+                order = Order(customer=Customer(id=customer), product=product, price=product.price,
+                            address=address, phone=phone, quantity=cart.get(str(product.id)), order_id=order_id)
+                order.save()
+
+            request.session['cart'] = {}     
+            return render(request,"orders.html",{'value':value})
+
+        if request.POST.get("address_post1"):
+            address_post1 = request.POST.get("address_post1")
+            address = address_post1
+            print('address_post1:',address_post1)
+            Customer.objects.filter(id = customer).update(address1 = address_post1)
+            # return render(request,'address.html',{'address_post1':address_post1})
+            phone = request.POST.get('phone')
+            customer = request.session.get('customer')
+            cart = request.session.get('cart')
+            products = Product.get_all_products_by_id(list(cart.keys()))
+            print(address, phone, customer, cart, products)
+            order_id = r.randint(1000000000, 9000000000)
+
+            for product in products:
+                order = Order(customer=Customer(id=customer), product=product, price=product.price,
+                            address=address, phone=phone, quantity=cart.get(str(product.id)), order_id=order_id)
+                order.save()
+
+            request.session['cart'] = {}     
+            
+            # return render(request, 'payment.html', {'radio_val': radio_val})
+            return redirect("orders")
+
+
+        
+        if request.POST.get("address_post2"):
+            address_post2 = request.POST.get("address_post2")
+            Customer.objects.filter(id = customer).update(address2 = address_post2)
+            return redirect("address")
+            
+
+
+
+        
+        if request.POST.get("address_post3"):
+            address_post3 = request.POST.get("address_post3")
+            Customer.objects.filter(id = customer).update(address3 = address_post3)
+            return redirect("address")
+
+        
+
 
 
 class CheckOut(View):
@@ -200,7 +277,6 @@ class CheckOut(View):
                           address=address, phone=phone, quantity=cart.get(str(product.id)), order_id=order_id)
             order.save()
 
-            # print(order.place_order())
         request.session['cart'] = {}
 
         return redirect("orders")
@@ -227,6 +303,8 @@ class Orders(View):
     def post(self, request):
         order_id = request.POST.get("order_id")
         request.session['order'] = order_id
+        # records = Order.objects.all()
+        # records.delete()   
         return redirect('payment')
 
 
@@ -251,12 +329,15 @@ class Payment(View):
             order_dict['orderId'] = order.order_id
             order_dict['tax'] = Payment.gst_price(total)
             order_dict['toPay'] = Payment.gst_price(total) + total + 100
+            order_dict['address'] = order.address
         # print(order_dict)
         return render(request, 'payment.html', order_dict)
 
     def post(self, request):
         value = request.POST.get("flexRadioDefault")
         print(value)
+        records = Order.objects.all()
+        records.delete()   
         return render(request, 'payment.html', {'value': value})
 
     @staticmethod

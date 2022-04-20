@@ -12,25 +12,29 @@
         <form action="" method="POST">
           {%csrf_token%}
           <div class="form-check mb-3">
-            <input class="form-check-input" type="radio" name="flexRadioDefault" value="Card Payment" id="flexRadioDefault1">
+            <input class="form-check-input" type="radio" name="flexRadioDefault" value="Card Payment"
+              id="flexRadioDefault1">
             <label class="form-check-label" for="flexRadioDefault1">
               Add Debit/Credit/Atm card
             </label>
           </div>
           <div class="form-check mb-3">
-            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value="Cash" checked>
+            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value="Cash"
+              checked>
             <label class="form-check-label" for="flexRadioDefault2">
               Select UPI app
             </label>
           </div>
           <div class="form-check mb-3">
-            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value="Cash" checked>
+            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value="Cash"
+              checked>
             <label class="form-check-label" for="flexRadioDefault2">
               Net Banking
             </label>
           </div>
           <div class="form-check mb-3">
-            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value="Cash" checked>
+            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value="Cash"
+              checked>
             <label class="form-check-label" for="flexRadioDefault2">
               Pay on Delivery
             </label>
@@ -38,7 +42,7 @@
 
 
         </form>
-    
+
 
 
         <!-- end of radio logic -->
@@ -88,8 +92,14 @@
             <span class="badge text-primary">{{toPay}} INR</span>
           </li>
         </ul>
-        <input type="submit" name="" id="" data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn btn-outline-info fs-3 text  border rounded col-lg-8  mt-3"
-        value="Place order and Pay">
+        <input type="submit" name="" id="" data-bs-toggle="modal" data-bs-target="#exampleModal"
+        class="btn btn-outline-info fs-3 text  border rounded col-lg-8  mt-3" value="Place order and Pay">
+        <!-- <form action="" method="POST">
+          {%csrf_token%}
+          <input type="submit" name="" id="" data-bs-toggle="modal" data-bs-target="#exampleModal"
+            class="btn btn-outline-info fs-3 text  border rounded col-lg-8  mt-3" value="Place order and Pay">
+        </form> -->
+
       </div>
     </div>
 
@@ -107,16 +117,26 @@
 
 
         <hr>
-        <a href="/"><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></a>
+        <form action="" method="POST">
+          {%csrf_token%}
+          <!-- <a href="/"><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></a> -->
+          <input type="submit" value="" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+        </form>
+        
       </div>
       <h5 class="text-success text-center mt-3">Your Order was placed</h5>
       <div class="modal-body text-center text-info">
         <div class="m-2 p-3">
-        
+
           <h4>Total Amount Paid {{toPay}}INR</h4>
         </div>
       </div>
-      <a class="btn btn-info col-lg-5 mx-auto mb-3" href="/">Go to homepage</a>
+      <form action="" class="mx-auto mb-2" method="POST">
+        {%csrf_token%}
+        <!-- <a class="btn btn-info col-lg-5 mx-auto mb-3" href="/">Go to homepage</a> -->
+        <input type="submit" class="btn btn-info" value="Go to homepage">
+      </form>
+      
     </div>
   </div>
 </div>

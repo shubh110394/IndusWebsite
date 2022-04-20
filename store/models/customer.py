@@ -38,3 +38,7 @@ class Customer(models.Model):
     def get_customers_by_id(customer_id):
         return Customer.objects.filter(id = customer_id)
 
+    @staticmethod
+    def get_address_by_id(customer_id):
+        if Customer.objects.filter(id = customer_id):
+            return Customer.address1

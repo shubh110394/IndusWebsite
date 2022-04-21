@@ -11,7 +11,7 @@
         <div class="col-lg-3 mx-auto">
             <div class="list-group">
                 {%for category in categories%}
-                <a href="#" class="list-group-item list-group-item-action">{{category.name}}</a>
+                <a href="/?category={{category.id}}" class="list-group-item list-group-item-action">{{category.name}}</a>
                 {% endfor%}
             </div>
         </div>
@@ -63,10 +63,10 @@
                                     value="Buy Now" /> -->
                             </form>
                             {%endif%}
-                            <form action="" method="POST">
+                            <form action="/" method="POST">
                               {%csrf_token%}
                               <input hidden type="text" name="product_key" value="{{prod.id}}">
-                              <input type="submit" class="btn btn-info border form-control" name="product_submit2" value="Buy Now" />
+                              <input  type="submit" class="btn btn-info border form-control" name="product_submit2" value="Buy Now" />
                             </form>
                             <!-- {% if request.session.customer%}
                             <input href="#" data-bs-toggle="modal" data-bs-target="#exampleModal" name="product_submit" type="submit" class="btn btn-info border form-control" value="Buy Now" />

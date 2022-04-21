@@ -29,8 +29,12 @@
         <ul class="navbar-nav me-auto">
 
           <li class="nav-item input-group">
-            <input type="text" class="p-1 me-0">
-            <button class="btn btn-info ml-0">Search</button>
+            <form action="search" method="Get" >
+
+              <input type="text" name="query" id="query" class="p-1 me-0">
+              <button class="btn btn-info ml-0">Search</button>
+            </form>
+
             <!-- <input type="text" class="form-control" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="basic-addon2">
             <span class="input-group-text" id="basic-addon2">Search</span> -->
           </li>

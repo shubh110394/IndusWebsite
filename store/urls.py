@@ -1,6 +1,6 @@
 from unicodedata import name
 from django.urls import path
-from .views import Index,Login,SignUp,logout,Cart,Orders,Payment,History
+from .views import Index,Login,SignUp,logout,Cart,Orders,Payment,History,Search
 from store.middlewares.auth import auth_middleware
 
 urlpatterns = [
@@ -13,6 +13,7 @@ urlpatterns = [
     path("orders",auth_middleware(Orders.as_view()),name="orders"),
     path("payment",Payment.as_view(),name="payment"),
     path("history",History.as_view(),name="history"),
+    path("search",Search,name='search')
 
 
 ]

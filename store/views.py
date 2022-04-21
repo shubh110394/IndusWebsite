@@ -43,12 +43,17 @@ class Index(View):
         cart = request.session.get("cart")
         if not cart:
             request.session['cart'] = {}
-        products = Product.get_all_products()
-        # products = None
+        # products = Product.get_all_products()
+        products = None
         categories = Category.get_all_categories()
         # categoryId = request.GET.get('category')
         # if categoryId:
         #     Product.get_all_products()
+        category_id = request.GET.get('category')
+        if category_id:
+            products = Product.get_all_products_category_by_id(category_id)
+        else:
+            products = Product.get_all_products()
 
         data = {
             "dict_val": dict_val,
@@ -68,8 +73,6 @@ class Index(View):
         
         
         customer = request.session.get("customer")
-        if cart == None:
-            redirect("homepage")
         if product_id:
             if customer:
                
@@ -516,3 +519,44 @@ class History(View):
             'orders': history
         }
         return render(request, 'orderHistory.html', order_dict)
+
+
+def Search(request):
+            query = request.GET.get("query")
+            print(query)
+            cus_id = request.session.get("customer")
+            customer = Customer.get_customers_by_id(cus_id)
+            dict_val = {}
+            for cus in customer:
+                # print(cus)
+                dict_val['address1'] = cus.address1
+                dict_val['address2'] = cus.address2
+                dict_val['address3'] = cus.address3
+            # ids = list(request.session.get("cart"))
+            # products = Product.get_all_products_by_id(ids)
+            # para = {
+            #     "dict_val" :dict_val,
+            #     'products':products,
+            #     'id':ids
+            # }
+
+            cart = request.session.get("cart")
+            if not cart:
+                request.session['cart'] = {}
+            # products = Product.get_all_products()
+            products = Product.objects.filter(name__icontains = query)
+            # products = None
+            categories = Category.get_all_categories()
+            # categoryId = request.GET.get('category')
+            # if categoryId:
+            #     Product.get_all_products()
+
+            data = {
+                "dict_val": dict_val,
+                'products': products,
+                # 'id':ids
+            }
+            data['products'] = products
+            data['categories'] = categories
+            # print('you are:', request.session.get('email'))
+            return render(request, 'search.html', data)

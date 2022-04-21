@@ -27,6 +27,7 @@
             </thead>
             <tbody>
                 {%for order in orders%}
+                <!-- orders is the parameter passed by our view which contains database entry records -->
                 <tr>
                     <td>{{forloop.counter}}</td>
                     <td><img style="height: 80px;" class="rounded-circle" src="{{order.product.image.url}}" alt=""></td>
@@ -37,11 +38,11 @@
                     <td>{{order.quantity|multiply:order.price}}</td>
                     <td>{{order.order_id}}</td>
                     {% if order.status %}
-                    <td class="badge bg-success mt-2">Completed</td>
+                    <td class="badge bg-success mt-2">Delivered</td>
                     <!-- <td>Completed</td> -->
                     {%else%}
                     <!-- <td><small class="badge badge-warning">Pending</small></td> -->
-                    <td class="badge bg-danger mt-2">Pending</td>
+                    <td class="badge bg-danger mt-2">Ready to Ship</td>
                     {% endif %}
 
 
@@ -52,9 +53,9 @@
                 {% endfor %}
             </tbody>
         </table>
-        <form action="" method="POST">
+        <!-- <form action="" method="POST">
             {% csrf_token %}
-            <!-- <label required for="" class="text-info">Order_id</label>
+            
             <input  type="text" name="order_id" class="btn btn-info border rounded col-lg-2" value="{{order_id}}"  > -->
 
             <!-- <div class="mt-0 pt-0 mb-3 pb-3">
@@ -68,15 +69,18 @@
                     class="btn btn-outline-info border rounded col-lg-2 float-end" value="Proceed to Payment">
             </div> -->
             <!-- -------------------------------------------------------------------------------------------------------- -->
-            <div class="form-group form-group mt-5 ">
+            <!-- <div class="form-group form-group mt-5 ">
 
                 <div class="form-group mt-5 pt-2 mb-3 pb-3 pl-0">
                     <label for="submit"></label>
-                    <input type="submit" name="" id=""
-                        class="btn btn-outline-info rounded col-lg-2 float-end" value="Proceed to Payment">
+                    <input  type="submit" name="" id="" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                        class="btn btn-outline-info rounded col-lg-2 float-end" value="Place Order">
                 </div>
             </div>
-        </form>
+        </form> -->
+        <!-- <h2>{{product_id}}</h2> -->
+        <input  type="submit" name="" id="" data-bs-toggle="modal" data-bs-target="#exampleModal"
+        class="btn btn-outline-info rounded col-lg-2 float-end" value="Place Order">
 
 
 
@@ -88,4 +92,120 @@
     </div>
 
 </div>
+
+<!-- modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Checkout Form</h5>
+          <hr>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+  
+  
+          <!-- address logic -->
+          <div class="border p-3 mb-5">
+            <h5 class="card-title mb-3">Choose any one address</h5>
+            <div class="p-3">
+              <form action="" method="POST">
+                {%csrf_token%}
+                {%if not dict_val.address1 and dict_val.address2 and dict_val.address3%}
+                <h5> Please add atleast one addresss in the form below</h5>
+                {%endif%}
+  
+                {%if dict_val.address1%}
+                <div class="form-check mb-3">
+                  <input class="form-check-input" type="radio" name="flexRadioDefault" value="{{dict_val.address1}}"
+                    id="flexRadioDefault1">
+                  <label class="form-check-label" for="flexRadioDefault1">
+                    {{dict_val.address1}}
+                  </label>
+                </div>
+                {%endif%}
+  
+                {%if dict_val.address2%}
+                <div class="form-check mb-3">
+                  <input class="form-check-input" type="radio" name="flexRadioDefault" value="{{dict_val.address2}}"
+                    id="flexRadioDefault2" checked>
+                  <label class="form-check-label" for="flexRadioDefault2">
+                    {{dict_val.address2}}
+                  </label>
+                </div>
+                {%endif%}
+  
+                {%if dict_val.address3%}
+                <div class="form-check mb-3">
+                  <input class="form-check-input" type="radio" name="flexRadioDefault" value="{{dict_val.address3}}"
+                    id="flexRadioDefault3">
+                  <label class="form-check-label" for="flexRadioDefault2">
+                    {{dict_val.address3}}
+                  </label>
+                </div>
+                {%endif%}
+  
+                <input type="submit" class="btn btn-info">
+              </form>
+            </div>
+          </div>
+  
+          <!-- <hr> -->
+  
+          <!-- add address -->
+          <div class="border p-3">
+            <!-- <h5>Add addresss</h5> -->
+            <div class="p-3">
+              {%if dict_val.address1 and dict_val.address2 and dict_val.address3%}
+              <h4>You have added 3 address already</h4>
+              {%endif%}
+  
+              {% if not dict_val.address1%}
+              <form action="" method="POST">
+                {%csrf_token%}
+                
+                <h5>Add addresss 1</h5>
+                <input type="text" name="address_post1" id="" class="form-control" placeholder=""
+                  aria-describedby="helpId">
+                <input type="text" name="phone" id="" class="form-control" placeholder="+91-XXXX"
+                  aria-describedby="helpId">
+                <input type="submit" name="" value="Add this address and proceed with it" id=""
+                  class="btn btn-dark form-control" placeholder="" aria-describedby="helpId">
+              </form>
+              {%endif%}
+  
+              {% if not dict_val.address2%}
+              <form action="" method="POST">
+                {%csrf_token%}
+                
+                <h5>Add addresss 2</h5>
+                <input type="text" name="address_post2" id="" class="form-control" placeholder=""
+                  aria-describedby="helpId">
+                <input type="text" name="phone" id="" class="form-control" placeholder="+91-XXXX"
+                  aria-describedby="helpId">
+                <input type="submit" name="" value="Add this address and proceed with it" id=""
+                  class="btn btn-dark form-control" placeholder="" aria-describedby="helpId">
+              </form>
+              {%endif%}
+  
+              {% if not dict_val.address3%}
+              <form action="" method="POST">
+                {%csrf_token%}
+                
+                <h5>Add addresss 3</h5>
+                <input type="text" name="address_post3" id="" class="form-control" placeholder=""
+                  aria-describedby="helpId">
+                <input type="text" name="phone" id="" class="form-control" placeholder="+91-XXXX"
+                  aria-describedby="helpId">
+                <input type="submit" name="" value="Add this address and proceed with it" id=""
+                  class="btn btn-dark form-control" placeholder="" aria-describedby="helpId">
+              </form>
+              {%endif%}
+    
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 {%endblock%}

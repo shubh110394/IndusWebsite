@@ -52,6 +52,8 @@
                                 </form>
                             </div>
                             {%else%}
+
+                            
                             <form action="/#{{prod.id}}" method="POST" class="btn-block">
                                 {%csrf_token%}
                                 <input hidden type="text" name="product" value="{{prod.id}}">
@@ -61,7 +63,16 @@
                                     value="Buy Now" /> -->
                             </form>
                             {%endif%}
-                            <input href="#" data-bs-toggle="modal" data-bs-target="#exampleModal" type="submit" class="btn btn-light border form-control" name="name" value="Buy Now" />
+                            <form action="" method="POST">
+                              {%csrf_token%}
+                              <input hidden type="text" name="product_key" value="{{prod.id}}">
+                              <input type="submit" class="btn btn-info border form-control" name="product_submit2" value="Buy Now" />
+                            </form>
+                            <!-- {% if request.session.customer%}
+                            <input href="#" data-bs-toggle="modal" data-bs-target="#exampleModal" name="product_submit" type="submit" class="btn btn-info border form-control" value="Buy Now" />
+                            {%else%}
+                            <input href="#" type="submit" class="btn btn-secondary border form-control" name="product_submit2" value="Buy Now" />
+                            {%endif%} -->
 
 
                         </div>
@@ -81,9 +92,11 @@
                         </div> -->
 
                     </div>
+                    <!-- <input href="#" data-bs-toggle="modal" data-bs-target="#exampleModal" type="submit" class="btn btn-info border form-control" name="product_submit2" value="Buy Now" /> -->
                 </div>
-
+                
                 {% endfor %}
+                
             </div>
         </div>
     </div>
@@ -97,6 +110,7 @@
           <hr>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
+        {% if request.session.customer%}
         <div class="modal-body">
   
   
@@ -104,7 +118,7 @@
           <div class="border p-3 mb-5">
             <h5 class="card-title mb-3">Choose any one address</h5>
             <div class="p-3">
-              <form action="" method="POST">
+              <form action="/" method="POST">
                 {%csrf_token%}
                 {%if not dict_val.address1 and dict_val.address2 and dict_val.address3%}
                 <h5> Please add atleast one addresss in the form below</h5>
@@ -140,7 +154,7 @@
                 </div>
                 {%endif%}
   
-                <input type="submit" class="btn btn-info">
+                <input type="submit"  class="btn btn-info">
               </form>
             </div>
           </div>
@@ -200,6 +214,12 @@
             </div>
           </div>
         </div>
+        {%else%}
+        <div class="modal-body">
+          <h4>You are not logged in please hit on login button to continue</h4>
+          <a href="/login" class="btn btn-info">Login</a>
+        </div>
+        {%endif%}
       </div>
     </div>
   </div>

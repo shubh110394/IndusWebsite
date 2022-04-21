@@ -45,10 +45,14 @@
       </tfoot>
     </table>
     <div class="m-3 p-3">
-      <a href="#" data-bs-toggle="modal" data-bs-target="#exampleModal"
+      <!-- <a href="/orders"
         class="btn btn-outline-info border rounded col-lg-2 float-end">
         Checkout
-      </a>
+      </a> -->
+      <form action="" method="POST">
+        {%csrf_token%}
+        <input type="submit" value="Checkout" class="btn btn-outline-info border rounded col-lg-2 float-end"> >
+      </form>
     </div>
     {%endif%}
   </div>

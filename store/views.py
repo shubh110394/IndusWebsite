@@ -14,6 +14,8 @@ from .models.category import Category
 from .models.customer import Customer
 from django.views import View
 import random as r
+
+from store.models import customer
 # from django.utils.decorators import method_decorator
 # from store.middlewares.auth import auth_middleware
 
@@ -22,6 +24,22 @@ import random as r
 
 class Index(View):
     def get(self, request):
+        cus_id = request.session.get("customer")
+        customer = Customer.get_customers_by_id(cus_id)
+        dict_val = {}
+        for cus in customer:
+            # print(cus)
+            dict_val['address1'] = cus.address1
+            dict_val['address2'] = cus.address2
+            dict_val['address3'] = cus.address3
+        # ids = list(request.session.get("cart"))
+        # products = Product.get_all_products_by_id(ids)
+        # para = {
+        #     "dict_val" :dict_val,
+        #     'products':products,
+        #     'id':ids
+        # }
+
         cart = request.session.get("cart")
         if not cart:
             request.session['cart'] = {}
@@ -32,7 +50,11 @@ class Index(View):
         # if categoryId:
         #     Product.get_all_products()
 
-        data = {}
+        data = {
+            "dict_val": dict_val,
+            'products': products,
+            # 'id':ids
+        }
         data['products'] = products
         data['categories'] = categories
         # print('you are:', request.session.get('email'))
@@ -41,8 +63,44 @@ class Index(View):
     def post(self, request):
         product = request.POST.get('product')
         remove = request.POST.get('remove')
+        product_id = request.POST.get("product_key")
         cart = request.session.get("cart")
-        buy = request.POST.get('buy')
+        
+        
+        customer = request.session.get("customer")
+        if cart == None:
+            redirect("homepage")
+        if product_id:
+            if customer:
+               
+                
+                orders = Order.get_orders_by_customer(
+                customer)
+                customerObj = Customer.get_customers_by_id(customer)
+                dict_val= {}
+                for cus in customerObj:
+                    dict_val['address1'] = cus.address1
+                    dict_val['address2'] = cus.address2
+                    dict_val['address3'] = cus.address3
+
+                order_id = r.randint(1000000000, 9000000000)
+                products = Product.get_all_products_by_id(product_id)
+                for product in products:
+                        order = Order(customer=Customer(id=customer), product=product, price=product.price,
+                                    quantity=1, order_id=order_id)
+                        order.save()
+
+                        history = Previous(customer=Customer(id=customer), product=product, price=product.price,
+                                        quantity=1, order_id=order_id)
+                        history.save()
+                order_dict = {
+                    'orders':orders,
+                    # 'dict_val':dict_val
+                }
+                # return render(request,"orders.html",order_dict)
+                return redirect("orders")
+            else:
+                return redirect("login")
         if cart:
             quantity = cart.get(product)
             if quantity:
@@ -61,15 +119,68 @@ class Index(View):
             cart[product] = 1
 
         request.session['cart'] = cart
+
+            
         # print("cart:",request.session['cart'])
 
-        if buy:
-            if request.session.get("customer") == None:
-                return redirect("login")
-            else:
-                pass
-        # print('product',product)
+        # if buy_not_login:
+        #     return redirect("login")
+
+        # if buy_login:
+        #     products = None
+        #         # price = None
+        #     phone = 1234
+        #     order_id = r.randint(1000000000, 9000000000)
+        #     address = None
+        #     radio_val = None
+        #     products = Product.get_all_products_by_id(buy_login)
+
+        #     if request.POST.get("flexRadioDefault"):
+        #         radio_val = request.POST.get("flexRadioDefault")
+        #         address = radio_val
+        #         request.session['address'] = address
+        #         return redirect("orders")
+
+        #     if request.POST.get("address_post1"):
+        #             address_post1 = request.POST.get("address_post1")
+        #             address = address_post1
+        #             Customer.objects.filter(id=customer).update(
+        #                 address1=address_post1)
+        #             phone = request.POST.get('phone')
+        #             request.session['address'] = address
+        #             return redirect("orders")
+
+        #     if request.POST.get("address_post2"):
+        #             address_post2 = request.POST.get("address_post2")
+        #             address = address_post2
+        #             Customer.objects.filter(id=customer).update(
+        #                 address2=address_post2)
+        #             phone = request.POST.get('phone')
+        #             request.session['address'] = address
+        #             return redirect("orders")
+
+        #     if request.POST.get("address_post3"):
+        #             address_post3 = request.POST.get("address_post3")
+        #             address = address_post3
+        #             Customer.objects.filter(id=customer).update(
+        #                 address3=address_post3)
+        #             phone = request.POST.get('phone')
+        #             request.session['address'] = address
+        #             return redirect("orders")
+
+            # for product in products:
+            #         order = Order(customer=Customer(id=customer), product=product, price=product.price,
+            #                     phone=phone, quantity=1, order_id=order_id)
+            #         order.save()
+
+            #         history = Previous(customer=Customer(id=customer), product=product, price=product.price,
+            #                         phone=phone, quantity=1, order_id=order_id)
+            #         history.save()
+
+        #     request.session['cart'] = {}
+
         return redirect("homepage")
+
 
 class SignUp(View):
     def get(self, request):
@@ -161,9 +272,9 @@ class Login(View):
                     Login.return_url = None
                     return redirect("homepage")
             else:
-                error_message = "email or password invalid"
+                error_message = "password invalid"
         else:
-            error_message = "email or password invalid"
+            error_message = "email not registered"
 
         print(customer)
         return render(request, 'login.html', {"error": error_message})
@@ -172,7 +283,6 @@ class Login(View):
 def logout(request):
     request.session.clear()
     return redirect("login")
-
 
 
 class Cart(View):
@@ -186,19 +296,18 @@ class Cart(View):
             customer = Customer.get_customers_by_id(cus_id)
             dict_val = {}
             for cus in customer:
-                # print(cus)
                 dict_val['address1'] = cus.address1
                 dict_val['address2'] = cus.address2
-                dict_val['address3']  = cus.address3
+                dict_val['address3'] = cus.address3
             ids = list(request.session.get("cart"))
             products = Product.get_all_products_by_id(ids)
             para = {
-                "dict_val" :dict_val,
-                'products':products,
-                'id':ids
+                'products': products,
+                'id': ids
             }
             return render(request, 'cart.html', para)
-    def post(self,request):
+
+    def post(self, request):
         customer = request.session.get('customer')
         products = None
         # price = None
@@ -208,7 +317,18 @@ class Cart(View):
         address = None
         radio_val = None
         products = Product.get_all_products_by_id(list(cart.keys()))
-        
+        for product in products:
+            order = Order(customer=Customer(id=customer), product=product, price=product.price,
+                          phone=phone, quantity=cart.get(str(product.id)), order_id=order_id)
+            order.save()
+
+            history = Previous(customer=Customer(id=customer), product=product, price=product.price,
+                               phone=phone, quantity=cart.get(str(product.id)), order_id=order_id)
+            history.save()
+        # return render(request,'orders.html')
+        request.session['cart'] = {}
+        return redirect("orders")
+
         if request.POST.get("flexRadioDefault"):
             radio_val = request.POST.get("flexRadioDefault")
             address = radio_val
@@ -227,85 +347,45 @@ class Cart(View):
             #                 phone=phone, quantity=cart.get(str(product.id)), order_id=order_id)
             #     order.save()
 
-            # request.session['cart'] = {}     
+            # request.session['cart'] = {}
             # return render(request,"orders.html",{'value':value})
 
         if request.POST.get("address_post1"):
             address_post1 = request.POST.get("address_post1")
             address = address_post1
-            Customer.objects.filter(id = customer).update(address1 = address_post1)
+            Customer.objects.filter(id=customer).update(address1=address_post1)
             phone = request.POST.get('phone')
             request.session['address'] = address
             # products = Product.get_all_products_by_id(list(cart.keys()))
             # order_id = r.randint(1000000000, 9000000000)
 
-
-            # request.session['cart'] = {}     
+            # request.session['cart'] = {}
             # return redirect("orders")
         if request.POST.get("address_post2"):
             address_post2 = request.POST.get("address_post2")
             address = address_post2
-            Customer.objects.filter(id = customer).update(address2 = address_post2)
+            Customer.objects.filter(id=customer).update(address2=address_post2)
             phone = request.POST.get('phone')
             request.session['address'] = address
 
         if request.POST.get("address_post3"):
             address_post3 = request.POST.get("address_post3")
             address = address_post3
-            Customer.objects.filter(id = customer).update(address3 = address_post3)
+            Customer.objects.filter(id=customer).update(address3=address_post3)
             phone = request.POST.get('phone')
             request.session['address'] = address
 
+        # for product in products:
+        #     order = Order(customer=Customer(id=customer), product=product, price=product.price,
+        #                   phone=phone, quantity=cart.get(str(product.id)), order_id=order_id)
+        #     order.save()
 
-        for product in products:
-            order = Order(customer=Customer(id=customer), product=product, price=product.price,
-                            phone=phone, quantity=cart.get(str(product.id)), order_id=order_id)
-            order.save()
+        #     history = Previous(customer=Customer(id=customer), product=product, price=product.price,
+        #                        phone=phone, quantity=cart.get(str(product.id)), order_id=order_id)
+        #     history.save()
 
-            history = Previous(customer=Customer(id=customer), product=product, price=product.price,
-                             phone=phone, quantity=cart.get(str(product.id)), order_id=order_id)
-            history.save()
-
-        request.session['cart'] = {}     
-        return redirect("orders")
-        
-
-
-        
-
-            
-
-
-
-        
-
-
-        
-
-
-
-class CheckOut(View):
-    def get(self,request):
-        return HttpResponse("hey there")
-    # def post(self, request):
-    #     # request.Post gives the value whose key is address
-    #     address = request.POST.get('address')
-    #     phone = request.POST.get('phone')
-    #     customer = request.session.get('customer')
-    #     cart = request.session.get('cart')
-    #     products = Product.get_all_products_by_id(list(cart.keys()))
-    #     print(address, phone, customer, cart, products)
-    #     order_id = r.randint(1000000000, 9000000000)
-
-    #     for product in products:
-    #         order = Order(customer=Customer(id=customer), product=product, price=product.price,
-    #                       address=address, phone=phone, quantity=cart.get(str(product.id)), order_id=order_id)
-    #         order.save()
-
-    #     request.session['cart'] = {}
-
-    #     return redirect("payment")
-    
+        # request.session['cart'] = {}
+        # return redirect("orders")
 
 
 class Orders(View):
@@ -315,24 +395,68 @@ class Orders(View):
     def get(self, request):
         # for finding out which customer is trying to checkout
         customer = request.session.get("customer")
+        customerObj = Customer.get_customers_by_id(customer)
         orders = Order.get_orders_by_customer(
             customer)  # taking from model Order
-        # order_id = r.randint(1000000000, 9000000000)
+        order_id = r.randint(1000000000, 9000000000)
+        
 
+
+        dict_val= {}
+        for cus in customerObj:
+            dict_val['address1'] = cus.address1
+            dict_val['address2'] = cus.address2
+            dict_val['address3'] = cus.address3
+        # print(orders)
         order_dict = {
             'orders': orders,
-            # 'order_id': order_id
+            'order_id': order_id,
+            'dict_val':dict_val
         }
-        print(orders)
         return render(request, 'orders.html', order_dict)
 
     def post(self, request):
-        order_id = request.POST.get("order_id")
-        request.session['order'] = order_id
-        # records = Order.objects.all()
-        # records.delete()   
-        return redirect('payment')
+        customer = request.session.get("customer")
 
+        if request.POST.get("flexRadioDefault"):
+            print("hi")
+            radio_val = request.POST.get("flexRadioDefault")
+            address = radio_val
+            request.session['address'] = address
+            return redirect('payment')
+
+
+        # if request.POST.get("address_post1"):
+        #     address_post1 = request.POST.get("address_post1")
+        #     address = address_post1
+        #     Customer.objects.filter(id=customer).update(address1=address_post1)
+        #     phone = request.POST.get('phone')
+        #     request.session['address'] = address
+        #     return redirect('payment')
+
+        # if request.POST.get("address_post2"):
+        #     address_post2 = request.POST.get("address_post2")
+        #     address = address_post2
+        #     Customer.objects.filter(id=customer).update(address2=address_post2)
+        #     phone = request.POST.get('phone')
+        #     request.session['address'] = address
+        #     return redirect('payment')
+
+        # if request.POST.get("address_post3"):
+        #     address_post3 = request.POST.get("address_post3")
+        #     address = address_post3
+        #     Customer.objects.filter(id=customer).update(address3=address_post3)
+        #     phone = request.POST.get('phone')
+        #     request.session['address'] = address
+        #     return redirect('payment')
+
+        # order_id = request.POST.get("order_id")
+        # request.session['order'] = order_id
+        # return redirect('payment')
+
+        # redirect ("homepage")
+
+        
 
 
 class Payment(View):
@@ -369,7 +493,7 @@ class Payment(View):
 
         else:
             records = Order.objects.all()
-            records.delete()   
+            records.delete()
         # return render(request, 'payment.html', {'value': value})
         return redirect("homepage")
 
@@ -383,13 +507,12 @@ class History(View):
     def get(self, request):
         # for finding out which customer is trying to checkout
         customer = request.session.get("customer")
-        history = Previous.get_orders_by_customer(customer)  # taking from model Order
+        history = Previous.get_orders_by_customer(
+            customer)  # taking from model Order
         # order_id = r.randint(1000000000, 9000000000)
         print(history)
-    
-        
 
         order_dict = {
-            'orders':history
+            'orders': history
         }
         return render(request, 'orderHistory.html', order_dict)

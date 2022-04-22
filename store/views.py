@@ -429,29 +429,29 @@ class Orders(View):
             return redirect('payment')
 
 
-        # if request.POST.get("address_post1"):
-        #     address_post1 = request.POST.get("address_post1")
-        #     address = address_post1
-        #     Customer.objects.filter(id=customer).update(address1=address_post1)
-        #     phone = request.POST.get('phone')
-        #     request.session['address'] = address
-        #     return redirect('payment')
+        if request.POST.get("address_post1"):
+            address_post1 = request.POST.get("address_post1")
+            address = address_post1
+            Customer.objects.filter(id=customer).update(address1=address_post1)
+            phone = request.POST.get('phone')
+            request.session['address'] = address
+            return redirect('payment')
 
-        # if request.POST.get("address_post2"):
-        #     address_post2 = request.POST.get("address_post2")
-        #     address = address_post2
-        #     Customer.objects.filter(id=customer).update(address2=address_post2)
-        #     phone = request.POST.get('phone')
-        #     request.session['address'] = address
-        #     return redirect('payment')
+        if request.POST.get("address_post2"):
+            address_post2 = request.POST.get("address_post2")
+            address = address_post2
+            Customer.objects.filter(id=customer).update(address2=address_post2)
+            phone = request.POST.get('phone')
+            request.session['address'] = address
+            return redirect('payment')
 
-        # if request.POST.get("address_post3"):
-        #     address_post3 = request.POST.get("address_post3")
-        #     address = address_post3
-        #     Customer.objects.filter(id=customer).update(address3=address_post3)
-        #     phone = request.POST.get('phone')
-        #     request.session['address'] = address
-        #     return redirect('payment')
+        if request.POST.get("address_post3"):
+            address_post3 = request.POST.get("address_post3")
+            address = address_post3
+            Customer.objects.filter(id=customer).update(address3=address_post3)
+            phone = request.POST.get('phone')
+            request.session['address'] = address
+            return redirect('payment')
 
         # order_id = request.POST.get("order_id")
         # request.session['order'] = order_id
@@ -523,6 +523,7 @@ class History(View):
 
 def Search(request):
             query = request.GET.get("query")
+            category_id = request.GET.get('category')
             print(query)
             cus_id = request.session.get("customer")
             customer = Customer.get_customers_by_id(cus_id)
@@ -543,20 +544,26 @@ def Search(request):
             cart = request.session.get("cart")
             if not cart:
                 request.session['cart'] = {}
-            # products = Product.get_all_products()
-            products = Product.objects.filter(name__icontains = query)
+            products = None
+            if query:
+                products = Product.objects.filter(name__icontains = query)
+                if not products:
+                    products = 'false'
+            # if category_id:
+            #     products = Product.get_all_products_category_by_id(category_id)
+            # else:
+            #     products = Product.get_all_products()
             # products = None
             categories = Category.get_all_categories()
-            # categoryId = request.GET.get('category')
-            # if categoryId:
-            #     Product.get_all_products()
 
             data = {
                 "dict_val": dict_val,
                 'products': products,
                 # 'id':ids
             }
-            data['products'] = products
+            # data['products'] = products
             data['categories'] = categories
+
+
             # print('you are:', request.session.get('email'))
             return render(request, 'search.html', data)

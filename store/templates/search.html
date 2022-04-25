@@ -1,13 +1,12 @@
 {% extends 'base.html'%}
+<!-- 
 
-{% block content%}
+
 
 {%load cart%}
-<!-- body -->
+
 <div class="container-fluid mt-3">
     <div class="row">
-
-        <!-- filter -->
         <div class="col-lg-3 mx-auto">
             <div class="list-group">
                 {%for category in categories%}
@@ -19,7 +18,7 @@
 
 
 
-        <!-- products -->
+
         <div id="products" class="col-lg-8 mx-auto">
             <div class="row mx-auto  ">
                 {%if products == 'false' %}
@@ -37,7 +36,6 @@
                         <div class="card-body">
                             <h5 class="card-title">{{prod.name}}</h5>
                             <p class="card-text"><b>{{prod.price}}</b></p>
-                            <!-- {{prod | is_in_cart:request.session.cart}} -->
 
                         </div>
                         <div class="card-footer p-0 ">
@@ -79,7 +77,6 @@
                         </div>
 
                     </div>
-                    <!-- <input href="#" data-bs-toggle="modal" data-bs-target="#exampleModal" type="submit" class="btn btn-info border form-control" name="product_submit2" value="Buy Now" /> -->
                 </div>
                 
                 {% endfor %}
@@ -91,4 +88,240 @@
     </div>
 </div>
 
+ -->
+
+
+
+{% block content%}
+
+{%load cart%}
+<!-- body -->
+<div class="container-fluid mt-3">
+    <div class="row">
+
+        <!-- filter -->
+        <div class="col-lg-3 mx-auto">
+            <div class="list-group">
+                {%for category in categories%}
+                <a href="/?category={{category.id}}" class="list-group-item list-group-item-action">{{category.name}}</a>
+                {% endfor%}
+            </div>
+        </div>
+
+
+
+
+        <!-- products -->
+        <div id="products" class="col-lg-8 mx-auto">
+            <div class="row mx-auto  ">
+                {%if products == 'false' %}
+                <div class="col-sm-4 pt-6">
+                    <h1 class="text-danger">OOPS</h1>
+                    <h4 class="text-danger">no such item</h4>
+                    <p class="text-info">Please try again with some other item name.......</p>
+                </div>
+                {%else%}
+                {% for prod in products%}
+                <div class="col-sm-4">
+                    <div class="card mx-auto mb-3" id={{prod.id}} style="width: 18rem;">
+                        <img src="{{prod.image.url}}" class="card-img-top" alt="...">
+                        <div class="card-body">
+                            <h5 class="card-title">{{prod.name}}</h5>
+                            <p class="card-text"><b>{{prod.price}}</b></p>
+                            <!-- {{prod | is_in_cart:request.session.cart}} -->
+
+                        </div>
+                        <div class="card-footer p-0 ">
+                            {% if prod|is_in_cart:request.session.cart %}
+
+                            <div class="row g-0">
+
+                                <form action="/#{{prod.id}}" method="POST" class="col-2">
+                                    {%csrf_token%}
+                                    <input hidden type="text" name="product" value="{{prod.id}}">
+                                    <input hidden type="text" name="remove" value='True'>
+                                    <input type="submit" value="-" class="btn btn-block btn-secondary ">
+                                </form>
+                                <div class="text-center col">{{prod|cart_quantity:request.session.cart}} in cart</div>
+
+                                <form action="/#{{prod.id}}" method="POST" class="col-2">
+                                    {%csrf_token%}
+                                    <input hidden type="text" name="product" value="{{prod.id}}">
+                                    <input type="submit" value="+" class="btn btn-block btn-secondary ">
+                                </form>
+                            </div>
+                            {%else%}
+
+                            
+                            <form action="/#{{prod.id}}" method="POST" class="btn-block">
+                                {%csrf_token%}
+                                <input hidden type="text" name="product" value="{{prod.id}}">
+                                <input href="" type="submit" class="btn btn-light border form-control"
+                                    value="Add to Cart" />
+                                <!-- <input href="#" type="submit" class="btn btn-light border form-control"
+                                    value="Buy Now" /> -->
+                            </form>
+                            {%endif%}
+                            <form action="/" method="POST">
+                              {%csrf_token%}
+                              <input hidden type="text" name="product_key" value="{{prod.id}}">
+                              <input  type="submit" class="btn btn-info border form-control" name="product_submit2" value="Buy Now" />
+                            </form>
+                            <!-- {% if request.session.customer%}
+                            <input href="#" data-bs-toggle="modal" data-bs-target="#exampleModal" name="product_submit" type="submit" class="btn btn-info border form-control" value="Buy Now" />
+                            {%else%}
+                            <input href="#" type="submit" class="btn btn-secondary border form-control" name="product_submit2" value="Buy Now" />
+                            {%endif%} -->
+
+
+                        </div>
+                        <!-- <div class="card-footer p-0 row g-0">
+                            <form action="/" method="POST" class="btn-block">
+                                {%csrf_token%}
+                                <input hidden type="text" name="product" value="{{prod.id}}">
+                                <input href="#" type="submit" class="float-right btn btn-light border btn-sm" value="Add to Cart" />
+                                <input href="#" type="submit" class="float-right btn btn-light border btn-sm" value="Buy Now" />
+                            </form>
+                            <div class="row" hidden>
+                                <input type="submit" value="-" class="col-2 btn btn-block btn-secondary">
+                                <div class="text-center col">2 in cart</div>
+                                <input type="submit" value="+" class="col-2 btn btn-block btn-secondary ">
+                            </div>
+
+                        </div> -->
+
+                    </div>
+                    <!-- <input href="#" data-bs-toggle="modal" data-bs-target="#exampleModal" type="submit" class="btn btn-info border form-control" name="product_submit2" value="Buy Now" /> -->
+                </div>
+                
+                {% endfor %}
+                {%endif%}
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Checkout Form</h5>
+          <hr>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        {% if request.session.customer%}
+        <div class="modal-body">
+  
+  
+          <!-- address logic -->
+          <div class="border p-3 mb-5">
+            <h5 class="card-title mb-3">Choose any one address</h5>
+            <div class="p-3">
+              <form action="/" method="POST">
+                {%csrf_token%}
+                {%if not dict_val.address1 and dict_val.address2 and dict_val.address3%}
+                <h5> Please add atleast one addresss in the form below</h5>
+                {%endif%}
+  
+                {%if dict_val.address1%}
+                <div class="form-check mb-3">
+                  <input class="form-check-input" type="radio" name="flexRadioDefault" value="{{dict_val.address1}}"
+                    id="flexRadioDefault1">
+                  <label class="form-check-label" for="flexRadioDefault1">
+                    {{dict_val.address1}}
+                  </label>
+                </div>
+                {%endif%}
+  
+                {%if dict_val.address2%}
+                <div class="form-check mb-3">
+                  <input class="form-check-input" type="radio" name="flexRadioDefault" value="{{dict_val.address2}}"
+                    id="flexRadioDefault2" checked>
+                  <label class="form-check-label" for="flexRadioDefault2">
+                    {{dict_val.address2}}
+                  </label>
+                </div>
+                {%endif%}
+  
+                {%if dict_val.address3%}
+                <div class="form-check mb-3">
+                  <input class="form-check-input" type="radio" name="flexRadioDefault" value="{{dict_val.address3}}"
+                    id="flexRadioDefault3">
+                  <label class="form-check-label" for="flexRadioDefault2">
+                    {{dict_val.address3}}
+                  </label>
+                </div>
+                {%endif%}
+  
+                <input type="submit"  class="btn btn-info">
+              </form>
+            </div>
+          </div>
+  
+          <!-- <hr> -->
+  
+          <!-- add address -->
+          <div class="border p-3">
+            <!-- <h5>Add addresss</h5> -->
+            <div class="p-3">
+              {%if dict_val.address1 and dict_val.address2 and dict_val.address3%}
+              <h4>You have added 3 address already</h4>
+              {%endif%}
+  
+              {% if not dict_val.address1%}
+              <form action="" method="POST">
+                {%csrf_token%}
+                
+                <h5>Add addresss 1</h5>
+                <input type="text" name="address_post1" id="" class="form-control" placeholder=""
+                  aria-describedby="helpId">
+                <input type="text" name="phone" id="" class="form-control" placeholder="+91-XXXX"
+                  aria-describedby="helpId">
+                <input type="submit" name="" value="Add this address and proceed with it" id=""
+                  class="btn btn-dark form-control" placeholder="" aria-describedby="helpId">
+              </form>
+              {%endif%}
+  
+              {% if not dict_val.address2%}
+              <form action="" method="POST">
+                {%csrf_token%}
+                
+                <h5>Add addresss 2</h5>
+                <input type="text" name="address_post2" id="" class="form-control" placeholder=""
+                  aria-describedby="helpId">
+                <input type="text" name="phone" id="" class="form-control" placeholder="+91-XXXX"
+                  aria-describedby="helpId">
+                <input type="submit" name="" value="Add this address and proceed with it" id=""
+                  class="btn btn-dark form-control" placeholder="" aria-describedby="helpId">
+              </form>
+              {%endif%}
+  
+              {% if not dict_val.address3%}
+              <form action="" method="POST">
+                {%csrf_token%}
+                
+                <h5>Add addresss 3</h5>
+                <input type="text" name="address_post3" id="" class="form-control" placeholder=""
+                  aria-describedby="helpId">
+                <input type="text" name="phone" id="" class="form-control" placeholder="+91-XXXX"
+                  aria-describedby="helpId">
+                <input type="submit" name="" value="Add this address and proceed with it" id=""
+                  class="btn btn-dark form-control" placeholder="" aria-describedby="helpId">
+              </form>
+              {%endif%}
+    
+            </div>
+          </div>
+        </div>
+        {%else%}
+        <div class="modal-body">
+          <h4>You are not logged in please hit on login button to continue</h4>
+          <a href="/login" class="btn btn-info">Login</a>
+        </div>
+        {%endif%}
+      </div>
+    </div>
+  </div>
 {% endblock %}

@@ -47,4 +47,11 @@ def total_cart_price(product,cart):
 def multiply(number,number1):
     return number * number1
 
+@register.filter(name="showCart")
+def showCart(cart,keys):
+    q = 0
+    for k in keys:
+        q += cart[k]
+    print('cart',q)
+    return q
 

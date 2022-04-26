@@ -40,12 +40,26 @@
                 </div>
                 {%else%}
                 <div class="form-group">
+                  <!-- <div class="alert alert-info" role="alert">
+                    <h5>You are registered successfully now login to continue shopping</h5>
+                  </div> -->
+                  
+                  <label for="">Email</label>
+                  <input required value="{{values.email}}"  type="email" name="email" id="" class="form-control" placeholder="Enter your email">
+                  <label required for="">Password</label>
+                  <input  type="password" name="password" id="" class="form-control" placeholder="*******">
 
-                    <!-- email -->
+                  <div class="form-group mt-3">
+                    <label for=""></label>
+                    <input  type="submit" name="" id="" class="btn btn-sm btn-info col-lg-4" value="Login">
+                  </div>
+                  <!-- {%if loginVal%}
+                    <div class="alert alert-info" role="alert">
+                      <h5>You are registered successfully now login to continue shopping</h5>
+                    </div>
+                    
                     <label for="">Email</label>
                     <input required value="{{values.email}}"  type="email" name="email" id="" class="form-control" placeholder="Enter your email">
-
-                    <!-- password -->
                     <label required for="">Password</label>
                     <input  type="password" name="password" id="" class="form-control" placeholder="*******">
 
@@ -53,6 +67,20 @@
                       <label for=""></label>
                       <input  type="submit" name="" id="" class="btn btn-sm btn-info col-lg-4" value="Login">
                     </div>
+                  {%else%}
+                    
+                    <label for="">Email</label>
+                    <input required value="{{values.email}}"  type="email" name="email" id="" class="form-control" placeholder="Enter your email">
+                    <label required for="">Password</label>
+                    <input  type="password" name="password" id="" class="form-control" placeholder="*******">
+
+                    <div class="form-group mt-3">
+                      <label for=""></label>
+                      <input  type="submit" name="" id="" class="btn btn-sm btn-info col-lg-4" value="Login">
+                    </div>
+                  {%endif%} -->
+
+
 
 
                 </div>

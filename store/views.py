@@ -263,7 +263,7 @@ class SignUp(View):
 
             customer.register()
 
-            return redirect('homepage')
+            return redirect('login')
         else:
             data = {
                 "error": error_message,

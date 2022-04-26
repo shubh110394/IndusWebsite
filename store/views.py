@@ -122,157 +122,113 @@ class Index(View):
 
         request.session['cart'] = cart
         request.session['quantity'] = quantity
-        # print("cart:", cart)
-        # print("quantity:", quantity)
-
-        # print("cart:",request.session['cart'])
-
-        # if buy_not_login:
-        #     return redirect("login")
-
-        # if buy_login:
-        #     products = None
-        #         # price = None
-        #     phone = 1234
-        #     order_id = r.randint(1000000000, 9000000000)
-        #     address = None
-        #     radio_val = None
-        #     products = Product.get_all_products_by_id(buy_login)
-
-        #     if request.POST.get("flexRadioDefault"):
-        #         radio_val = request.POST.get("flexRadioDefault")
-        #         address = radio_val
-        #         request.session['address'] = address
-        #         return redirect("orders")
-
-        #     if request.POST.get("address_post1"):
-        #             address_post1 = request.POST.get("address_post1")
-        #             address = address_post1
-        #             Customer.objects.filter(id=customer).update(
-        #                 address1=address_post1)
-        #             phone = request.POST.get('phone')
-        #             request.session['address'] = address
-        #             return redirect("orders")
-
-        #     if request.POST.get("address_post2"):
-        #             address_post2 = request.POST.get("address_post2")
-        #             address = address_post2
-        #             Customer.objects.filter(id=customer).update(
-        #                 address2=address_post2)
-        #             phone = request.POST.get('phone')
-        #             request.session['address'] = address
-        #             return redirect("orders")
-
-        #     if request.POST.get("address_post3"):
-        #             address_post3 = request.POST.get("address_post3")
-        #             address = address_post3
-        #             Customer.objects.filter(id=customer).update(
-        #                 address3=address_post3)
-        #             phone = request.POST.get('phone')
-        #             request.session['address'] = address
-        #             return redirect("orders")
-
-            # for product in products:
-            #         order = Order(customer=Customer(id=customer), product=product, price=product.price,
-            #                     phone=phone, quantity=1, order_id=order_id)
-            #         order.save()
-
-            #         history = Previous(customer=Customer(id=customer), product=product, price=product.price,
-            #                         phone=phone, quantity=1, order_id=order_id)
-            #         history.save()
-
-        #     request.session['cart'] = {}
-
         return redirect("homepage")
 
-# class Search(View):
-#     def get(self, request):
-#         query = request.GET.get("query")
-#         cus_id = request.session.get("customer")
-#         customer = Customer.get_customers_by_id(cus_id)
-#         dict_val = {}
-#         for cus in customer:
-#             dict_val['address1'] = cus.address1
-#             dict_val['address2'] = cus.address2
-#             dict_val['address3'] = cus.address3
+class Search(View):
 
-#         cart = request.session.get("cart")
-#         if not cart:
-#             request.session['cart'] = {}
-#         products = None
-#         categories = Category.get_all_categories()
-#         category_id = request.GET.get('category')
-#         if category_id:
-#             products = Product.get_all_products_category_by_id(category_id)
-#         else:
-#             products = Product.get_all_products()
+    def get(self, request):
+        query = request.GET.get("query")
+        cus_id = request.session.get("customer")
+        customer = Customer.get_customers_by_id(cus_id)
+        dict_val = {}
+        for cus in customer:
+            dict_val['address1'] = cus.address1
+            dict_val['address2'] = cus.address2
+            dict_val['address3'] = cus.address3
 
-#         data = {
-#             "dict_val": dict_val,
-#             'products': products,
-#             # 'id':ids
-#         }
-#         data['products'] = products
-#         data['categories'] = categories
-#         return render(request, 'index.html', data)
+        cart = request.session.get("cart")
+        if not cart:
+            request.session['cart'] = {}
+        products = None
+        categories = Category.get_all_categories()
+        category_id = request.GET.get('category')
+        if category_id:
+            products = Product.get_all_products_category_by_id(category_id)
+        else:
+            products = Product.get_all_products()
 
-#     def post(self, request):
-#         product = request.POST.get('product')
-#         remove = request.POST.get('remove')
-#         product_id = request.POST.get("product_key")
-#         cart = request.session.get("cart")
-#         quantity = None
+        if query:
+                products = Product.objects.filter(name__icontains = query)
+                if not products:
+                    products = 'false'
 
-#         customer = request.session.get("customer")
-#         if product_id:
-#             if customer:
+        # def searchMatch(query,item):
 
-#                 orders = Order.get_orders_by_customer(
-#                 customer)
-#                 customerObj = Customer.get_customers_by_id(customer)
-#                 dict_val = {}
-#                 for cus in customerObj:
-#                     dict_val['address1'] = cus.address1
-#                     dict_val['address2'] = cus.address2
-#                     dict_val['address3'] = cus.address3
+        #     if Product.objects.filter(name__icontains = query) or Product.objects.filter(category__icontains = query) or Product.objects.filter(price__icontains = query):
+        #         return True
+        #     if not products:
+        #             products = 'false'
+        #     else:
+        #         return False
 
-#                 order_id = r.randint(1000000000, 9000000000)
-#                 products = Product.get_all_products_by_id(product_id)
-#                 for product in products:
-#                         order = Order(customer=Customer(id=customer), product=product, price=product.price,
-#                                     quantity=1, order_id=order_id)
-#                         order.save()
+        # products = [item for item in products if searchMatch(query,item)]
 
-#                         history = Previous(customer=Customer(id=customer), product=product, price=product.price,
-#                                         quantity=1, order_id=order_id)
-#                         history.save()
-#                 order_dict = {
-#                     'orders': orders,
-#                 }
+        data = {
+            "dict_val": dict_val,
+            'products': products,
+            # 'id':ids
+        }
+        data['products'] = products
+        data['categories'] = categories
+        return render(request, 'search.html', data)
 
-#                 return redirect("orders")
-#             else:
-#                 return redirect("login")
-#         if cart:
-#             quantity = cart.get(product)
-#             if quantity:
-#                 if remove:
-#                     if quantity <= 1:
-#                         cart.pop(product)
-#                     else:
-#                         cart[product] = quantity - 1
-#                 else:
-#                     cart[product] = quantity + 1
-#             else:
-#                 cart[product] = 1
+    def post(self, request):
+        product = request.POST.get('product2')
+        remove = request.POST.get('remove')
+        product_id = request.POST.get("product_key")
+        cart = request.session.get("cart")
+        quantity = None
 
-#         else:
-#             cart = {}
-#             cart[product] = 1
+        customer = request.session.get("customer")
+        if product_id:
+            if customer:
 
-#         request.session['cart'] = cart
-#         request.session['quantity'] = quantity
-#         return redirect("search")
+                orders = Order.get_orders_by_customer(
+                customer)
+                customerObj = Customer.get_customers_by_id(customer)
+                dict_val = {}
+                for cus in customerObj:
+                    dict_val['address1'] = cus.address1
+                    dict_val['address2'] = cus.address2
+                    dict_val['address3'] = cus.address3
+
+                order_id = r.randint(1000000000, 9000000000)
+                products = Product.get_all_products_by_id(product_id)
+                for product in products:
+                        order = Order(customer=Customer(id=customer), product=product, price=product.price,
+                                    quantity=1, order_id=order_id)
+                        order.save()
+
+                        history = Previous(customer=Customer(id=customer), product=product, price=product.price,
+                                        quantity=1, order_id=order_id)
+                        history.save()
+                order_dict = {
+                    'orders': orders,
+                }
+
+                return redirect("orders")
+            else:
+                return redirect("login")
+        if cart:
+            quantity = cart.get(product)
+            if quantity:
+                if remove:
+                    if quantity <= 1:
+                        cart.pop(product)
+                    else:
+                        cart[product] = quantity - 1
+                else:
+                    cart[product] = quantity + 1
+            else:
+                cart[product] = 1
+
+        else:
+            cart = {}
+            cart[product] = 1
+
+        request.session['cart'] = cart
+        request.session['quantity'] = quantity
+        return redirect("search")
 
 
 class SignUp(View):
@@ -375,7 +331,8 @@ class Login(View):
 
 def logout(request):
     request.session.clear()
-    return redirect("login")
+    # return HttpResponse("hi")
+    return redirect("homepage")
 
 
 class Cart(View):
@@ -468,19 +425,6 @@ class Cart(View):
             phone = request.POST.get('phone')
             request.session['address'] = address
 
-        # for product in products:
-        #     order = Order(customer=Customer(id=customer), product=product, price=product.price,
-        #                   phone=phone, quantity=cart.get(str(product.id)), order_id=order_id)
-        #     order.save()
-
-        #     history = Previous(customer=Customer(id=customer), product=product, price=product.price,
-        #                        phone=phone, quantity=cart.get(str(product.id)), order_id=order_id)
-        #     history.save()
-
-        # request.session['cart'] = {}
-        # return redirect("orders")
-
-
 class Orders(View):
 
     # @method_decorator(auth_middleware)
@@ -540,11 +484,6 @@ class Orders(View):
             request.session['address'] = address
             return redirect('payment')
 
-        # order_id = request.POST.get("order_id")
-        # request.session['order'] = order_id
-        # return redirect('payment')
-
-        # redirect ("homepage")
 
 
 class Payment(View):
@@ -606,52 +545,52 @@ class History(View):
         return render(request, 'orderHistory.html', order_dict)
 
 
-def Search(request):
+# def Search(request):
     
-            query = request.GET.get("query")
-            remove = request.POST.get('remove')
+#             query = request.GET.get("query")
+#             remove = request.POST.get('remove')
 
-            category_id = request.GET.get('category')
-            cus_id = request.session.get("customer")
-            customer = Customer.get_customers_by_id(cus_id)
-            dict_val = {}
-            for cus in customer:
-                dict_val['address1'] = cus.address1
-                dict_val['address2'] = cus.address2
-                dict_val['address3'] = cus.address3
+#             category_id = request.GET.get('category')
+#             cus_id = request.session.get("customer")
+#             customer = Customer.get_customers_by_id(cus_id)
+#             dict_val = {}
+#             for cus in customer:
+#                 dict_val['address1'] = cus.address1
+#                 dict_val['address2'] = cus.address2
+#                 dict_val['address3'] = cus.address3
 
-            cart = request.session.get("cart")
-            if not cart:
-                request.session['cart'] = {}
-            if cart:
-                quantity = cart.get(product)
-                if quantity:
-                    if remove:
-                        if quantity <= 1:
-                            cart.pop(product)
-                        else:
-                            cart[product] = quantity - 1
-                    else:
-                        cart[product] = quantity + 1
-                else:
-                    cart[product] = 1
+#             cart = request.session.get("cart")
+#             if not cart:
+#                 request.session['cart'] = {}
+#             if cart:
+#                 quantity = cart.get(product)
+#                 if quantity:
+#                     if remove:
+#                         if quantity <= 1:
+#                             cart.pop(product)
+#                         else:
+#                             cart[product] = quantity - 1
+#                     else:
+#                         cart[product] = quantity + 1
+#                 else:
+#                     cart[product] = 1
 
-            else:
-                cart = {}
-                cart[product] = 1
-            products = None
-            if query:
-                products = Product.objects.filter(name__icontains = query)
-                if not products:
-                    products = 'false'
-            categories = Category.get_all_categories()
+#             else:
+#                 cart = {}
+#                 cart[product] = 1
+#             products = None
+#             if query:
+#                 products = Product.objects.filter(name__icontains = query)
+#                 if not products:
+#                     products = 'false'
+#             categories = Category.get_all_categories()
 
-            data = {
-                "dict_val": dict_val,
-                'products': products,
-                'query':query
-            }
+#             data = {
+#                 "dict_val": dict_val,
+#                 'products': products,
+#                 'query':query
+#             }
 
-            data['categories'] = categories
-            print('type',type(data['categories']))
-            return render(request, 'search.html', data)
+#             data['categories'] = categories
+#             print('type',type(data['categories']))
+#             return render(request, 'search.html', data)

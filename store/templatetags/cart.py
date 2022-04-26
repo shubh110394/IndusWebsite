@@ -6,12 +6,17 @@ register = template.Library()
 @register.filter(name="is_in_cart")
 def is_in_cart(product, cart):
     keys = cart.keys()
-
     for id in keys:
-            # print(id,product.id)
         if int(id) == product.id:
-        # if id == product.id:
-                return True
+            return True
+
+    # for id in keys:
+
+    #     if id == None:
+    #         return False
+    #     elif int(id) == product.id:
+
+    #             return True
 
     return False
     # print(keys)

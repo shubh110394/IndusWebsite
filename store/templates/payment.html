@@ -9,9 +9,9 @@
       <div class="card-body">
         <h5 class="card-title mb-3">Choose any one payment method</h5>
         <!-- <p class="card-text">With supporting text below as a natural lead-in to additional content.</p> -->
-        <form action="" method="POST">
+        <form action="/payment" method="POST">
           {%csrf_token%}
-          <div class="form-check mb-3">
+          <!-- <div class="form-check mb-3">
             <input class="form-check-input" type="radio" name="flexRadioDefault" value="Card Payment"
               id="flexRadioDefault1">
             <label class="form-check-label" for="flexRadioDefault1">
@@ -19,26 +19,27 @@
             </label>
           </div>
           <div class="form-check mb-3">
-            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value="Cash"
-              checked>
+            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value="UPI"
+              >
             <label class="form-check-label" for="flexRadioDefault2">
               Select UPI app
             </label>
-          </div>
-          <div class="form-check mb-3">
-            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value="Cash"
-              checked>
+          </div> -->
+          <div  class="form-check mb-3">
+            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value="Razorpay"
+            >
             <label class="form-check-label" for="flexRadioDefault2">
-              Net Banking
+              Pay with Razorpay
             </label>
           </div>
-          <div class="form-check mb-3">
+          <div  class="form-check mb-3">
             <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value="Cash"
-              checked>
+              >
             <label class="form-check-label" for="flexRadioDefault2">
               Pay on Delivery
             </label>
           </div>
+          <input type="submit" class="btn btn-info" value="Confirm Payment Method">
 
 
         </form>
@@ -92,13 +93,21 @@
             <span class="badge text-primary">{{toPay}} INR</span>
           </li>
         </ul>
+
+
+        {%if value == "Cash" %}
         <input type="submit" name="" id="" data-bs-toggle="modal" data-bs-target="#exampleModal"
         class="btn btn-outline-info fs-3 text  border rounded col-lg-8  mt-3" value="Place order and Pay">
-        <!-- <form action="" method="POST">
+        {%else%}
+        <form action="" method="POST">
           {%csrf_token%}
-          <input type="submit" name="" id="" data-bs-toggle="modal" data-bs-target="#exampleModal"
-            class="btn btn-outline-info fs-3 text  border rounded col-lg-8  mt-3" value="Place order and Pay">
-        </form> -->
+          <input hidden type="text" class="btn btn-info" name="payment_method" value="{{value}}">
+          <input type="submit" name="" id=""
+          class="btn btn-outline-info fs-3 text  border rounded col-lg-8  mt-3" value="Place order and Pay">
+        </form>
+        <!-- <button type="submit" name="" id="rzp-button1"
+        class="btn btn-outline-info fs-3 text  border rounded col-lg-8  mt-3">Place order and Pay</button> -->
+        {%endif%}
 
       </div>
     </div>
@@ -128,19 +137,18 @@
       <div class="modal-body text-center text-info">
         <div class="m-2 p-3">
 
-          <h4>Total Amount Paid {{toPay}}INR</h4>
+          <h4>Total Amount to be paid on delivery {{toPay}}INR</h4>
+          <p class="text-warning">Be ready with the change</p>
         </div>
       </div>
       <form action="" class="mx-auto mb-2" method="POST">
         {%csrf_token%}
         <!-- <a class="btn btn-info col-lg-5 mx-auto mb-3" href="/">Go to homepage</a> -->
-        <input type="submit" class="btn btn-info" value="Go to homepage">
+        <input type="submit" class="btn btn-info"  value="Go to homepage">
       </form>
       
     </div>
   </div>
 </div>
-
-
 
 {%endblock%}

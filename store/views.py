@@ -1,12 +1,8 @@
-from distutils.log import error
-import email
-from itertools import product
-from wsgiref import validate
+from ast import Or
+from django.conf import settings
 from django.shortcuts import render, redirect, HttpResponseRedirect
 from django.contrib.auth.hashers import make_password, check_password
 from django.http import HttpResponse
-from store.models import orders
-
 from store.models.orders import Order
 from store.models.prevorder import Previous
 from .models.product import Product
@@ -16,11 +12,10 @@ from django.views import View
 import random as r
 
 from store.models import customer
-# from django.utils.decorators import method_decorator
-# from store.middlewares.auth import auth_middleware
+import razorpay
 
 
-# Create your views here.
+# Create your views here
 
 class Index(View):
     def get(self, request):
@@ -77,7 +72,7 @@ class Index(View):
             if customer:
 
                 orders = Order.get_orders_by_customer(
-                customer)
+                    customer)
                 customerObj = Customer.get_customers_by_id(customer)
                 dict_val = {}
                 for cus in customerObj:
@@ -88,13 +83,13 @@ class Index(View):
                 order_id = r.randint(1000000000, 9000000000)
                 products = Product.get_all_products_by_id(product_id)
                 for product in products:
-                        order = Order(customer=Customer(id=customer), product=product, price=product.price,
-                                    quantity=1, order_id=order_id)
-                        order.save()
+                    order = Order(customer=Customer(id=customer), product=product, price=product.price,
+                                  quantity=1, order_id=order_id)
+                    order.save()
 
-                        history = Previous(customer=Customer(id=customer), product=product, price=product.price,
-                                        quantity=1, order_id=order_id)
-                        history.save()
+                    history = Previous(customer=Customer(id=customer), product=product, price=product.price,
+                                       quantity=1, order_id=order_id)
+                    history.save()
                 order_dict = {
                     'orders': orders,
                     # 'dict_val':dict_val
@@ -124,6 +119,7 @@ class Index(View):
         request.session['quantity'] = quantity
         return redirect("homepage")
 
+
 class Search(View):
 
     def get(self, request):
@@ -148,9 +144,9 @@ class Search(View):
             products = Product.get_all_products()
 
         if query:
-                products = Product.objects.filter(name__icontains = query)
-                if not products:
-                    products = 'false'
+            products = Product.objects.filter(name__icontains=query)
+            if not products:
+                products = 'false'
 
         # def searchMatch(query,item):
 
@@ -184,7 +180,7 @@ class Search(View):
             if customer:
 
                 orders = Order.get_orders_by_customer(
-                customer)
+                    customer)
                 customerObj = Customer.get_customers_by_id(customer)
                 dict_val = {}
                 for cus in customerObj:
@@ -195,13 +191,13 @@ class Search(View):
                 order_id = r.randint(1000000000, 9000000000)
                 products = Product.get_all_products_by_id(product_id)
                 for product in products:
-                        order = Order(customer=Customer(id=customer), product=product, price=product.price,
-                                    quantity=1, order_id=order_id)
-                        order.save()
+                    order = Order(customer=Customer(id=customer), product=product, price=product.price,
+                                  quantity=1, order_id=order_id)
+                    order.save()
 
-                        history = Previous(customer=Customer(id=customer), product=product, price=product.price,
-                                        quantity=1, order_id=order_id)
-                        history.save()
+                    history = Previous(customer=Customer(id=customer), product=product, price=product.price,
+                                       quantity=1, order_id=order_id)
+                    history.save()
                 order_dict = {
                     'orders': orders,
                 }
@@ -425,6 +421,7 @@ class Cart(View):
             phone = request.POST.get('phone')
             request.session['address'] = address
 
+
 class Orders(View):
 
     # @method_decorator(auth_middleware)
@@ -485,8 +482,11 @@ class Orders(View):
             return redirect('payment')
 
 
+# Adding payment gateway
 
 class Payment(View):
+    order_dict = {
+    }
 
     def get(self, request):
         # for finding out which customer is trying to checkout
@@ -495,40 +495,118 @@ class Payment(View):
         orders = Order.get_orders_by_customer(
             customer)  # taking from model Order
         total = 0
-        order_dict = {
-        }
         for order in orders:
             num = order.quantity
             price = num * order.price
             total += price
         for order in orders:
-            order_dict['product'] = order.product
-            order_dict['total'] = total
-            order_dict['date'] = order.date
-            order_dict['orderId'] = order.order_id
-            order_dict['tax'] = Payment.gst_price(total)
-            order_dict['toPay'] = Payment.gst_price(total) + total + 100
-            order_dict['address'] = add
-        # print(order_dict)
-        return render(request, 'payment.html', order_dict)
+            Payment.order_dict['product'] = order.product
+            Payment.order_dict['total'] = total
+            Payment.order_dict['date'] = order.date
+            Payment.order_dict['orderId'] = order.order_id
+            Payment.order_dict['tax'] = Payment.gst_price(total)
+            Payment.order_dict['toPay'] = Payment.gst_price(
+                total) + total + 100
+            Payment.order_dict['address'] = add
+        # print(Payment.order_dict)
+        return render(request, 'payment.html', Payment.order_dict)
 
     def post(self, request):
         value = request.POST.get("flexRadioDefault")
-        if request.POST.get("flexRadioDefault"):
-            value = request.POST.get("flexRadioDefault")
-            print(value)
+        payment_method = request.POST.get("payment_method")
+        customer = request.session.get("customer")
+        customer_details = Customer.get_customers_by_id(customer)
 
+        cus_name = None
+        cus_email = None
+        cus_phone = None
+        for cus in customer_details:
+            cus_name = cus.first_name
+            cus_email = cus.email
+            cus_phone = cus.phone
+        orders = Order.get_orders_by_customer(
+            customer)
+        
+        error_message = None
+        total = 0
+        for order in orders:
+            num = order.quantity
+            price = num * order.price
+            total += price
+
+        if value:
+
+            if value == None:
+                error_message = "choose atleast one method"
+                Payment.order_dict['error_message'] = error_message
+                return render(request, 'payment.html', Payment.order_dict)
+            
+            if value != None:
+                Payment.order_dict['value'] = value
+                # Payment.order_dict['error_message'] = error_message
+                return render(request, 'payment.html', Payment.order_dict)
+
+        if payment_method:
+
+            if payment_method == "Cash":
+                    records = Order.objects.all()
+                    Previous.status = True
+                    records.delete()
+                    return redirect("homepage")
+            if payment_method == "Razorpay":
+                client = razorpay.Client(auth=(settings.KEY, settings.SECRET))
+                data = {"amount": total * 100, "currency": "INR",'payment_capture':1}
+                payment = client.order.create(data=data)
+                orders.razorpay_order_id = payment['id']
+                Order.place_order
+                print('payment', payment)
+                # Payment.order_dict['payment'] = payment
+                return render(request,'payment_sum_razor.html',{'payment':payment,'total':total})
         else:
             records = Order.objects.all()
+            Previous.status = True
             records.delete()
-        # return render(request, 'payment.html', {'value': value})
-        return redirect("homepage")
+            return redirect('homepage')
+
+        # else:
+        #     if payment_method == "Cash" or payment_method == None:
+        #         records = Order.objects.all()
+        #         Previous.status = True
+        #         records.delete()
+        #         return redirect("homepage")
+        #     else:
+        #         return redirect('razorInte')
+
+                # client = razorpay.Client(auth=(settings.KEY, settings.SECRET))
+                # data = {"amount": total * 100, "currency": "INR",'payment_capture':1}
+                # payment = client.order.create(data=data)
+                # orders.razorpay_order_id = payment['id']
+                # Order.place_order
+                # print('payment', payment)
+                # # Payment.order_dict['payment'] = payment
+                # return render(request,'payment_sum_razor.html',{'payment':payment,'total':total})
 
     @staticmethod
     def gst_price(price):
         after_tax = 0.12 * price
         return after_tax
 
+def razorInte(request):
+    # if request.method == "POST":
+    #             # key_id = 'rzp_test_nFQnwxZOOLoAND'
+    #             # key_secret = 'xHH4R8bNVv7bOjsoKnpC0n0H'
+
+    #             client = razorpay.Client(auth=(key_id, key_secret))
+
+    #             data = {"amount": 500 * 100, "currency": "INR",'payment_capture':1}
+    #             payment = client.order.create(data=data)
+    #             # order_obj.razorpay_order_id = payment['id']
+    #             # order_obj.save()
+    #             print('payment', payment)
+
+    # return render(request,'payment_sum_razor.html')
+    pass
+                
 
 class History(View):
     def get(self, request):
@@ -544,9 +622,20 @@ class History(View):
         }
         return render(request, 'orderHistory.html', order_dict)
 
+def success(request):
+    if request.method == "POST":
+            order_id = request.GET.get('order_id')
+            records = Order.objects.all()
+            records.delete()
+            Previous.status_change(order_id)
+            return redirect("homepage")
+    else:
+        order_id = request.GET.get('order_id')
+        Previous.status_change(order_id)
+        return render(request,'success.html')
 
 # def Search(request):
-    
+
 #             query = request.GET.get("query")
 #             remove = request.POST.get('remove')
 

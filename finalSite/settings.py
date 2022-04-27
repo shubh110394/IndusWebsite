@@ -124,8 +124,13 @@ STATIC_URL = '/static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
+# PAYMENT GATEWAY SETTINGS
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = "/download/"
 MEDIA_ROOT = BASE_DIR
+
+KEY = "rzp_test_nFQnwxZOOLoAND"
+SECRET = 'xHH4R8bNVv7bOjsoKnpC0n0H'

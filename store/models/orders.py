@@ -16,12 +16,24 @@ class Order(models.Model):
     date = models.DateField(default = datetime.datetime.today)
     status = models.BooleanField(default=False)
     order_id = models.IntegerField(default=0)
+    #related to razor pay
+    razorpay_order_id = models.CharField(max_length=500,null=True,blank=True)
+    razorpay_payment_id = models.CharField(max_length=500,null=True,blank=True)
+    razorpay_signature = models.CharField(max_length=500,null=True,blank=True)
 
 
 
-    # def place_order(self):
-    #     self.save()
+    def place_order(self):
+        self.save()
     @staticmethod
     def get_orders_by_customer(customer_id):
         return Order.objects.filter(customer = customer_id).order_by("-date")
+
+    @staticmethod
+    def get_all_orders():
+        return Order.objects.all()
+    
+    @staticmethod
+    def get_order_by_order_id(order_id):
+        return Order.objects.filter(order_id = order_id)
 

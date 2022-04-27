@@ -21,7 +21,7 @@
                     <th>Quantity</th>
                     <th>Total</th>
                     <th>orderId</th>
-                    <th>Status</th>
+                    <!-- <th>Status</th> -->
                     
                 </tr>
             </thead>
@@ -37,13 +37,11 @@
                     <td>{{order.quantity}}</td>
                     <td>{{order.quantity|multiply:order.price}}</td>
                     <td>{{order.order_id}}</td>
-                    {% if order.status %}
+                    <!-- {% if order.status %}
                     <td class="badge bg-success mt-2">Delivered</td>
-                    <!-- <td>Completed</td> -->
                     {%else%}
-                    <!-- <td><small class="badge badge-warning">Pending</small></td> -->
                     <td class="badge bg-danger mt-2">Ready to Ship</td>
-                    {% endif %}
+                    {% endif %} -->
 
 
                 </tr>
@@ -113,7 +111,7 @@
   
   
           <!-- address logic -->
-          <div class="border p-3 mb-5">
+          <div class="border p-3 mb-3">
             <h5 class="card-title mb-3">Choose any one address</h5>
             <div class="p-3">
               <form action="" method="POST">
@@ -157,10 +155,10 @@
             </div>
           </div>
   
-          <!-- <hr> -->
+          <hr>
   
           <!-- add address -->
-          <div class="border p-3">
+          <div class=" p-2">
             <!-- <h5>Add addresss</h5> -->
             <div class="p-3">
               {%if dict_val.address1 and dict_val.address2 and dict_val.address3%}
@@ -168,44 +166,45 @@
               {%endif%}
   
               {% if not dict_val.address1%}
-              <form action="" method="POST">
+              <form action="" class="border p-2 mb-2" method="POST">
                 {%csrf_token%}
                 
-                <h5>Add addresss 1</h5>
+                <h5 class="p-3 mb-2 bg-dark text-white text-center">Add addresss 1</h5>
+                
                 <input type="text" name="address_post1" id="" class="form-control" placeholder=""
                   aria-describedby="helpId">
                 <input type="text" name="phone" id="" class="form-control" placeholder="+91-XXXX"
                   aria-describedby="helpId">
                 <input type="submit" name="" value="Add this address and proceed with it" id=""
-                  class="btn btn-dark form-control" placeholder="" aria-describedby="helpId">
+                  class="btn btn-info form-control mt-2" placeholder="" aria-describedby="helpId">
               </form>
               {%endif%}
   
               {% if not dict_val.address2%}
-              <form action="" method="POST">
+              <form action="" class="border p-2 mb-2" method="POST">
                 {%csrf_token%}
                 
-                <h5>Add addresss 2</h5>
+                <h5 class="p-3 mb-2 bg-dark text-white text-center">Add addresss 2</h5>
                 <input type="text" name="address_post2" id="" class="form-control" placeholder=""
                   aria-describedby="helpId">
                 <input type="text" name="phone" id="" class="form-control" placeholder="+91-XXXX"
                   aria-describedby="helpId">
                 <input type="submit" name="" value="Add this address and proceed with it" id=""
-                  class="btn btn-dark form-control" placeholder="" aria-describedby="helpId">
+                  class="btn btn-info form-control mt-2" placeholder="" aria-describedby="helpId">
               </form>
               {%endif%}
   
               {% if not dict_val.address3%}
-              <form action="" method="POST">
+              <form action="" class="border p-2 mb-2" method="POST">
                 {%csrf_token%}
                 
-                <h5>Add addresss 3</h5>
+                <h5 class="p-3 mb-2 bg-dark text-white text-center">Add addresss 3</h5>
                 <input type="text" name="address_post3" id="" class="form-control" placeholder=""
                   aria-describedby="helpId">
                 <input type="text" name="phone" id="" class="form-control" placeholder="+91-XXXX"
                   aria-describedby="helpId">
                 <input type="submit" name="" value="Add this address and proceed with it" id=""
-                  class="btn btn-dark form-control" placeholder="" aria-describedby="helpId">
+                  class="btn btn-info form-control mt-2" placeholder="" aria-describedby="helpId">
               </form>
               {%endif%}
     

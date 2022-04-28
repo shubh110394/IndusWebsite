@@ -26,7 +26,7 @@ SECRET_KEY = os.environ['SECRET_KEY']
 DEBUG = False
 
 # ALLOWED_HOSTS = ['django-deptest.herokuapp.com','localhost']
-ALLOWED_HOSTS = ["induswebbi.herokuapp.com"]
+ALLOWED_HOSTS = ['induswebbi.herokuapp.com']
 
 
 # Application definition

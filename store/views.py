@@ -253,19 +253,25 @@ class SignUp(View):
         error_message = self.validateCustomer(customer)
 
         # saving
+        welcome = None
         if not error_message:
             # print(first_name,last_name,password)
             customer.password = make_password(customer.password)
-
+            welcome = "Successfull"
             customer.register()
-
-            return redirect('login')
+            # return redirect('login')
+            context = {
+                'welcome' : welcome
+            }
+            print(context)
+            return render(request, 'signup.html', context)
         else:
             data = {
                 "error": error_message,
                 "values": v1
             }
             return render(request, 'signup.html', data)
+        # return redirect('login')
 
     def validateCustomer(self, customer):
         error_message = None
@@ -296,7 +302,7 @@ class Login(View):
     return_url = None
 
     def get(self, request):
-        Login.return_url = request.GET.get('return_url')
+        # Login.return_url = request.GET.get('return_url')
         return render(request, 'login.html')
 
     def post(self, request):
@@ -311,11 +317,11 @@ class Login(View):
                 request.session['customer'] = customer.id
                 request.session['customer_name'] = customer.first_name
                 # request.session['email'] = customer.email ##we commented this coz customer id is enough due to its uniqueness
-                if Login.return_url:
-                    return HttpResponseRedirect(Login.return_url)
-                else:
-                    Login.return_url = None
-                    return redirect("homepage")
+                # if Login.return_url:
+                #     return HttpResponseRedirect(Login.return_url)
+                # else:
+                #     Login.return_url = None
+                return redirect("homepage")
             else:
                 error_message = "password invalid"
         else:
@@ -514,8 +520,10 @@ class Payment(View):
     def post(self, request):
         value = request.POST.get("flexRadioDefault")
         payment_method = request.POST.get("payment_method")
+        # payment_method = value
         customer = request.session.get("customer")
         customer_details = Customer.get_customers_by_id(customer)
+        home = request.POST.get("gohome")
 
         cus_name = None
         cus_email = None
@@ -533,18 +541,39 @@ class Payment(View):
             num = order.quantity
             price = num * order.price
             total += price
+        if home:
+            records = Order.objects.all()
+            Previous.status = True
+            Payment.order_dict['value'] = None
+            records.delete()
+            return redirect('homepage')
 
-        if value:
-
-            if value == None:
+        if value == None and payment_method == None:
                 error_message = "choose atleast one method"
                 Payment.order_dict['error_message'] = error_message
-                return render(request, 'payment.html', Payment.order_dict)
-            
-            if value != None:
                 Payment.order_dict['value'] = value
-                # Payment.order_dict['error_message'] = error_message
                 return render(request, 'payment.html', Payment.order_dict)
+        if value != None:
+                error_message = None
+                Payment.order_dict['error_message'] = error_message
+                Payment.order_dict['value'] = value
+                return render(request, 'payment.html', Payment.order_dict)
+ 
+
+        # if value:
+            
+
+        #     if value == None:
+        #         error_message = "choose atleast one method"
+        #         Payment.order_dict['error_message'] = error_message
+        #         return render(request, 'payment.html', Payment.order_dict)
+            
+        #     if value != None:
+        #         Payment.order_dict['value'] = value
+        #         return render(request, 'payment.html', Payment.order_dict)
+        
+
+            
 
         if payment_method:
 
@@ -558,11 +587,13 @@ class Payment(View):
                 data = {"amount": total * 100, "currency": "INR",'payment_capture':1}
                 payment = client.order.create(data=data)
                 orders.razorpay_order_id = payment['id']
+                Payment.order_dict['value'] = None
                 Order.place_order
                 print('payment', payment)
                 # Payment.order_dict['payment'] = payment
                 return render(request,'payment_sum_razor.html',{'payment':payment,'total':total})
         else:
+            print(value)
             records = Order.objects.all()
             Previous.status = True
             records.delete()

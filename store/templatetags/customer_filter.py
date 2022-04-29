@@ -8,6 +8,8 @@ def multiply(number,number1):
     return number * number1
 
 
+
+
 # @register.filter(name="user")
 # def user(customer):
 #     # keys = cart.keys()

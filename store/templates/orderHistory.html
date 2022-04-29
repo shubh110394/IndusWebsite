@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{%block content%}
+{%load cart%}
+
+<div class="container">
+    <div class="border rounded p-0 m-0">
+        <!-- {{products}} -->
+        <h2 class="display-4 bg-success text-white text-center pl-4 ml-4">Order History</h2>
+        <hr>
+
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Sno.</th>
+                    <th>Image</th>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Date of Order</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th>orderId</th>
+                    <!-- <th>Status</th> -->
+                    
+                </tr>
+            </thead>
+            <tbody>
+                {%for order in orders%}
+                <tr>
+                    <td>{{forloop.counter}}</td>
+                    <td><img style="height: 80px;" class="rounded-circle" src="{{order.product.image.url}}" alt=""></td>
+                    <td>{{order.product.name}}</td>
+                    <td>{{order.price}}</td>
+                    <td>{{order.date}}</td>
+                    <td>{{order.quantity}}</td>
+                    <td>{{order.quantity|multiply:order.price}}</td>
+                    <td>{{order.order_id}}</td>
+                    <!-- {% if order.status %}
+                    <td class="badge bg-success mt-2">Completed</td>
+                    
+                    {%else%}
+                    
+                    <td class="badge bg-danger mt-2">Pending</td>
+                    {% endif %} -->
+
+
+                </tr>
+                <!-- <tr>
+                    <td>{{order.order_id}}</td>
+                </tr> -->
+                {% endfor %}
+            </tbody>
+        </table>
+
+
+
+        <!-- <div class="m-3 p-3">
+            <a href="payment" class="btn btn-outline-info border rounded col-lg-2 float-start">
+                
+            </a>
+        </div> -->
+    </div>
+
+</div>
+{%endblock%}

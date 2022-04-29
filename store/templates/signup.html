@@ -6,9 +6,15 @@
     <div class="p4 m4 mt-4">
         <div class="col-lg-5 mx-auto border rounded p-4">
             <h3 class="alert alert-light border rounded ">Create an Account</h3>
+
             <form action="" method="POST">
                 {% csrf_token %}
-
+                {%if welcome%}
+                <div class="alert alert-primary" role="alert">
+                  <h6>You are registered</h6>
+                  <h6>click on <a class="btn btn-info" href="/login">Login</a> to continue</h6>
+                </div>
+                {%endif%}
                 {% if error%}
                 <div class="alert alert-danger" role="alert">
                     {{error}}

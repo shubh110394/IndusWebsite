@@ -9,39 +9,42 @@
       <div class="card-body">
         <h5 class="card-title mb-3">Choose any one payment method</h5>
         <!-- <p class="card-text">With supporting text below as a natural lead-in to additional content.</p> -->
-        <form action="" method="POST">
+        <form action="/payment" method="POST">
           {%csrf_token%}
-          <div class="form-check mb-3">
-            <input class="form-check-input" type="radio" name="flexRadioDefault" value="Card Payment" id="flexRadioDefault1">
-            <label class="form-check-label" for="flexRadioDefault1">
-              Add Debit/Credit/Atm card
-            </label>
+          {%if error_message%}
+          <div class="alert alert-primary" role="alert">
+            <strong>{{error_message}}</strong>
           </div>
-          <div class="form-check mb-3">
-            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value="Cash" checked>
+          {%endif%}
+          <div  class="form-check mb-3">
+
+            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value="Razorpay"
+            >
             <label class="form-check-label" for="flexRadioDefault2">
-              Select UPI app
+              Pay with Razorpay
             </label>
           </div>
-          <div class="form-check mb-3">
-            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value="Cash" checked>
-            <label class="form-check-label" for="flexRadioDefault2">
-              Net Banking
-            </label>
-          </div>
-          <div class="form-check mb-3">
-            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value="Cash" checked>
+          <div  class="form-check mb-3">
+            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value="Cash"
+              >
             <label class="form-check-label" for="flexRadioDefault2">
               Pay on Delivery
             </label>
           </div>
+          <input type="submit" class="btn btn-info" value="Confirm Payment Method">
 
 
         </form>
 
 
+
         <!-- end of radio logic -->
       </div>
+
+    </div>
+    <div class="border mt-3 p-2">
+      <h4>Your chosen address is</h4>
+      {{address}}
     </div>
   </div>
   <div class="col-lg-4">
@@ -82,13 +85,45 @@
             <span class="badge text-primary">{{toPay}} INR</span>
           </li>
         </ul>
-        <input type="submit" name="" id="" data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn btn-outline-info fs-3 text  border rounded col-lg-8  mt-3"
-        value="Place order and Pay">
+
+        {%if error_message or value == None %}
+        {%if value == None%}
+        <div class="alert alert-danger border" role="alert">
+          <strong>Alert: Please select payment method</strong>
+        </div>
+        {%else%}
+        <div class="alert alert-primary border" role="alert">
+          <strong>{{error_message}}</strong>
+        </div>
+        {%endif%}
+
+        <input type="submit" name="" id=""
+        class="btn btn-outline-info fs-3 text  border rounded col-lg-8  mt-3" disabled value="Place order and Pay">
+
+        {%else%}
+        {%if value == "Cash" %}
+        <input hidden type="text" id="input_tag" class="btn btn-info" name="payment_method" value="{{value}}">
+        <input type="submit" name="" id="" data-bs-toggle="modal" data-bs-target="#exampleModal"
+        class="btn btn-info fs-3 text  border rounded col-lg-8  mt-3" value="Place order and Pay">
+        {%else%}
+        <form action="" method="POST">
+          {%csrf_token%}
+          <input hidden type="text" id = "input_tag" class="btn btn-info" name="payment_method" value="{{value}}">
+          <input type="submit" name="" id=""
+          class="btn btn-info fs-3 text  border rounded col-lg-8  mt-3" value="Place order and Pay">
+        </form>
+        <!-- <button type="submit" name="" id="rzp-button1"
+        class="btn btn-outline-info fs-3 text  border rounded col-lg-8  mt-3">Place order and Pay</button> -->
+        {%endif%}
+
+        {%endif%}
+
       </div>
     </div>
 
   </div>
 </div>
+
 
 <!-- modal -->
 
@@ -100,20 +135,37 @@
 
 
         <hr>
-        <a href="/"><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></a>
+        <form action="" method="POST">
+          {%csrf_token%}
+          <!-- <a href="/"><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></a> -->
+          <input hidden type="text" class="btn btn-info mb-2 mt-0 ml-0" name="gohome" value="Be ready with the change" id="">
+          <br>
+          <input type="submit" value="" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+        </form>
+        
       </div>
       <h5 class="text-success text-center mt-3">Your Order was placed</h5>
       <div class="modal-body text-center text-info">
         <div class="m-2 p-3">
-        
-          <h4>Total Amount Paid {{toPay}}INR</h4>
+
+          <h4>Total Amount to be paid on delivery {{toPay}}INR</h4>
+          <p class="text-warning">Be ready with the change</p>
         </div>
       </div>
-      <a class="btn btn-info col-lg-5 mx-auto mb-3" href="/">Go to homepage</a>
+      <form action="" class="mx-auto mb-2" method="POST">
+        {%csrf_token%}
+        <!-- <a class="btn btn-info col-lg-5 mx-auto mb-3" href="/">Go to homepage</a> -->
+        <input hidden type="text" class="btn btn-info mb-2 mt-0 ml-0" name="gohome" value="Be ready with the change" id="">
+        <br>
+        <input type="submit" class="btn btn-info ml-4"  value="Go to homepage">
+      </form>
+      
     </div>
   </div>
 </div>
 
-
+<script>
+  document.getElementById("input_tag").defaultValue = None
+</script>
 
 {%endblock%}

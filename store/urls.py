@@ -1,6 +1,6 @@
 from unicodedata import name
 from django.urls import path
-from .views import Index,Login,SignUp,logout,Cart,Orders,Payment,History,Search,razorInte,success
+from .views import Index,Login,SignUp,logout,Cart,Orders,Payment,History,Search,razorInte,success,ViewPdf
 from store.middlewares.auth import auth_middleware
 
 urlpatterns = [
@@ -15,7 +15,9 @@ urlpatterns = [
     path("payment",Payment.as_view(),name="payment"),
     path("history",History.as_view(),name="history"),
     path("search/",Search.as_view(),name='search'),
-    path('success/',success,name='success')
+    path('success/',success,name='success'),
+    path('pdf_view/',ViewPdf.as_view(),name='pdf_view')
+
 
 
 ]

@@ -13,7 +13,15 @@ import random as r
 
 from store.models import customer
 import razorpay
-
+#for pdf generation
+from django.http import FileResponse
+from django.template.loader import get_template
+import io
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import inch
+from reportlab.lib.pagesizes import letter
+from io import BytesIO
+from xhtml2pdf import pisa
 
 # Create your views here
 
@@ -662,8 +670,67 @@ def success(request):
             return redirect("homepage")
     else:
         order_id = request.GET.get('order_id')
+        customer = request.session.get("customer")
+        orders = Order.get_orders_by_customer(
+            customer) 
+        context = {}
+        total = 0
+        trans_id = None
+        for order in orders:
+            num = order.quantity
+            price = num * order.price
+            total += price
+            trans_id = order.razorpay_order_id
+        
+        request.session['transaction_id'] = trans_id
+        price = request.session.get('ultimate_total')
+        context = {
+            'ultimate_total' : price,
+            'total':total,
+            'tax': 0.12 * total,
+        }
+        nam = ""
+        for order in orders:
+            nam += order.product.name + ","
+            context['product'] = nam
+            context['date'] = order.date
+            context['orderId'] = order.order_id
+        # print(context)
         Previous.status_change(order_id)
-        return render(request,'success.html')
+        return render(request,'success.html',context)
+
+
+
+def render_to_pdf(template_src, context_dict={}):
+	template = get_template(template_src)
+	html  = template.render(context_dict)
+	result = BytesIO()
+	pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
+	if not pdf.err:
+		return HttpResponse(result.getvalue(), content_type='application/pdf')
+	return None
+
+class ViewPdf(View):
+    def get(self,request,*args,**kwargs):
+            customer = request.session.get("customer")
+            pdf_data = Order.get_orders_by_customer(customer)
+            lines = {}
+            add = request.session.get('address')
+            for p in pdf_data:
+                lines['Customer_name'] = p.customer.first_name
+                lines['surname'] = p.customer.last_name
+                lines['product_name'] = p.product.name
+                lines['order_date'] = p.date
+                lines['order_id'] = p.order_id
+                lines['gross_total'] = p.price
+                lines['shipping_charges'] = 100
+                lines['tax'] = p.price * 0.12
+                lines['to_pay'] = request.session.get('ultimate_total')
+                lines['address'] = add
+            # print(pdf_data,lines)
+            lines['pdf_data'] = pdf_data
+            pdf = render_to_pdf('pdf_template.html',lines)
+            return HttpResponse(pdf,content_type = 'application/pdf')
 
 # def Search(request):
 

@@ -1,0 +1,55 @@
+{% extends 'base_without_nav.html' %}
+
+{%block content%}
+{%load cart%}
+<head>
+<style>
+</style>
+</head>
+
+<body>
+    <!-- Content for Static Frame 'header_frame' -->
+    <div id="header_content">
+    	<h2>Indus Website</h2>
+    </div>
+
+    <!-- HTML Content -->
+    <table>
+		<h4>Order Details</h4>
+		<tr>
+
+			<tr>
+					<td>Customer Name</td><td>{{Customer_name}} {{surname}}</td>	
+			</tr>
+			<tr>
+					<td>Delivery Address</td><td>{{address}}</td>
+			</tr>			
+			<tr>
+				<td>Order Id</td><td>{{order_id}}</td>
+			</tr>
+			<tr>
+					<td>Order Date</td><td>{{order_date}}</td>
+			</tr>
+		</tr>
+    </table>
+
+    <hr>
+
+    <table>
+		<h4>Product Details</h4>
+		{%for order in pdf_data%}
+    	<tr>
+    		<td>{{order.product.name}}</td>
+    		<td>{{order.price}}</td>
+    		<td>{{order.quantity}}</td>
+    		<td>{{order.quantity|multiply:order.price}} INR</td>
+    	</tr>
+		{%endfor%}
+    </table>
+
+    <hr>
+
+    <p><strong>Total: {{to_pay}} INR</strong></p>
+</body>
+</html>
+{% endblock %}

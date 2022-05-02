@@ -513,16 +513,24 @@ class Payment(View):
             num = order.quantity
             price = num * order.price
             total += price
+        ultimate_total = 0
+        gst = Payment.gst_price(total)
+
+        request.session['tax_gst'] = gst
+        nam = ""
         for order in orders:
-            Payment.order_dict['product'] = order.product
+            nam += order.product.name + ","
+            Payment.order_dict['product'] = nam
             Payment.order_dict['total'] = total
             Payment.order_dict['date'] = order.date
             Payment.order_dict['orderId'] = order.order_id
             Payment.order_dict['tax'] = Payment.gst_price(total)
             Payment.order_dict['toPay'] = Payment.gst_price(
                 total) + total + 100
+            ultimate_total = Payment.gst_price(total) + total + 100
             Payment.order_dict['address'] = add
         # print(Payment.order_dict)
+        request.session['ultimate_total'] = ultimate_total
         return render(request, 'payment.html', Payment.order_dict)
 
     def post(self, request):
@@ -599,6 +607,7 @@ class Payment(View):
                 Order.place_order
                 print('payment', payment)
                 # Payment.order_dict['payment'] = payment
+                # return redirect('success')
                 return render(request,'payment_sum_razor.html',{'payment':payment,'total':total})
         else:
             print(value)
@@ -727,7 +736,7 @@ class ViewPdf(View):
                 lines['tax'] = p.price * 0.12
                 lines['to_pay'] = request.session.get('ultimate_total')
                 lines['address'] = add
-            # print(pdf_data,lines)
+            print(pdf_data,lines)
             lines['pdf_data'] = pdf_data
             pdf = render_to_pdf('pdf_template.html',lines)
             return HttpResponse(pdf,content_type = 'application/pdf')

@@ -4,6 +4,7 @@ from django.db import models
 from .product import Product
 from .customer import Customer
 import datetime
+import time
 
 
 class Previous(models.Model):
@@ -13,7 +14,8 @@ class Previous(models.Model):
     address = models.CharField(max_length=50,default="",blank=True)
     phone = models.CharField(max_length=50,default="1234567890",blank=True)
     price = models.IntegerField()
-    date = models.DateField(default = datetime.datetime.today)
+    date = models.DateField(default=datetime.datetime.today)
+    date_time = models.DateTimeField(default=datetime.datetime.now())
     status = models.BooleanField(default=False)
     order_id = models.IntegerField(default=0)
     razorpay_order_id = models.CharField(max_length=500,null=True,blank=True)

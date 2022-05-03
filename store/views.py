@@ -22,6 +22,7 @@ from reportlab.lib.units import inch
 from reportlab.lib.pagesizes import letter
 from io import BytesIO
 from xhtml2pdf import pisa
+import datetime
 
 # Create your views here
 
@@ -447,6 +448,7 @@ class Orders(View):
         orders = Order.get_orders_by_customer(
             customer)  # taking from model Order
         order_id = r.randint(1000000000, 9000000000)
+        now = datetime.datetime.now()
 
         dict_val = {}
         for cus in customerObj:
@@ -457,7 +459,8 @@ class Orders(View):
         order_dict = {
             'orders': orders,
             'order_id': order_id,
-            'dict_val': dict_val
+            'dict_val': dict_val,
+            'time': now.strftime("%H:%M")
         }
         return render(request, 'orders.html', order_dict)
 
@@ -504,6 +507,10 @@ class Payment(View):
 
     def get(self, request):
         # for finding out which customer is trying to checkout
+        error_message = None
+        val = request.GET.get("flexRadioDefault1")
+        if not val:
+            error_message = "Select payment method"
         customer = request.session.get("customer")
         add = request.session.get('address')
         orders = Order.get_orders_by_customer(
@@ -530,109 +537,72 @@ class Payment(View):
             ultimate_total = Payment.gst_price(total) + total + 100
             Payment.order_dict['address'] = add
         # print(Payment.order_dict)
+        Payment.order_dict['error_message'] = error_message
+        request.session['total_product'] = total
         request.session['ultimate_total'] = ultimate_total
         return render(request, 'payment.html', Payment.order_dict)
 
     def post(self, request):
         value = request.POST.get("flexRadioDefault")
-        payment_method = request.POST.get("payment_method")
-        # payment_method = value
-        customer = request.session.get("customer")
-        customer_details = Customer.get_customers_by_id(customer)
-        home = request.POST.get("gohome")
+        return redirect("payment")
+        # payment_method = request.POST.get("payment_method")
+        # customer = request.session.get("customer")
+        # customer_details = Customer.get_customers_by_id(customer)
+        # home = request.POST.get("gohome")
 
-        cus_name = None
-        cus_email = None
-        cus_phone = None
-        for cus in customer_details:
-            cus_name = cus.first_name
-            cus_email = cus.email
-            cus_phone = cus.phone
-        orders = Order.get_orders_by_customer(
-            customer)
+        # orders = Order.get_orders_by_customer(
+        #     customer)
         
-        error_message = None
-        total = 0
-        for order in orders:
-            num = order.quantity
-            price = num * order.price
-            total += price
-        if home:
-            records = Order.objects.all()
-            Previous.status = True
-            Payment.order_dict['value'] = None
-            records.delete()
-            return redirect('homepage')
+        # error_message = None
+        # total = 0
+        # for order in orders:
+        #     num = order.quantity
+        #     price = num * order.price
+        #     total += price
+        # if home:
+        #     records = Order.objects.all()
+        #     Previous.status = True
+        #     Payment.order_dict['value'] = None
+        #     records.delete()
+        #     return redirect('homepage')
 
-        if value == None and payment_method == None:
-                error_message = "choose atleast one method"
-                Payment.order_dict['error_message'] = error_message
-                Payment.order_dict['value'] = value
-                return render(request, 'payment.html', Payment.order_dict)
-        if value != None:
-                error_message = None
-                Payment.order_dict['error_message'] = error_message
-                Payment.order_dict['value'] = value
-                return render(request, 'payment.html', Payment.order_dict)
- 
-
-        # if value:
-            
-
-        #     if value == None:
+        # if value == None and payment_method == None:
         #         error_message = "choose atleast one method"
         #         Payment.order_dict['error_message'] = error_message
-        #         return render(request, 'payment.html', Payment.order_dict)
-            
-        #     if value != None:
         #         Payment.order_dict['value'] = value
         #         return render(request, 'payment.html', Payment.order_dict)
-        
+        # if value != None:
+        #         error_message = None
+        #         Payment.order_dict['error_message'] = error_message
+        #         Payment.order_dict['value'] = value
+        #         return render(request, 'payment.html', Payment.order_dict)
 
-            
 
-        if payment_method:
+        # if payment_method:
 
-            if payment_method == "Cash":
-                    records = Order.objects.all()
-                    Previous.status = True
-                    records.delete()
-                    return redirect("homepage")
-            if payment_method == "Razorpay":
-                client = razorpay.Client(auth=(settings.KEY, settings.SECRET))
-                data = {"amount": total * 100, "currency": "INR",'payment_capture':1}
-                payment = client.order.create(data=data)
-                orders.razorpay_order_id = payment['id']
-                Payment.order_dict['value'] = None
-                Order.place_order
-                print('payment', payment)
-                # Payment.order_dict['payment'] = payment
-                # return redirect('success')
-                return render(request,'payment_sum_razor.html',{'payment':payment,'total':total})
-        else:
-            print(value)
-            records = Order.objects.all()
-            Previous.status = True
-            records.delete()
-            return redirect('homepage')
-
+        #     if payment_method == "Cash":
+        #             records = Order.objects.all()
+        #             Previous.status = True
+        #             records.delete()
+        #             return redirect("homepage")
+        #     if payment_method == "Razorpay":
+        #         client = razorpay.Client(auth=(settings.KEY, settings.SECRET))
+        #         data = {"amount": total * 100, "currency": "INR",'payment_capture':1}
+        #         payment = client.order.create(data=data)
+        #         orders.razorpay_order_id = payment['id']
+        #         Payment.order_dict['value'] = None
+        #         Order.place_order
+        #         print('payment', payment)
+        #         # Payment.order_dict['payment'] = payment
+        #         # return redirect('success')
+        #         return render(request,'payment_sum_razor.html',{'payment':payment,'total':total})
         # else:
-        #     if payment_method == "Cash" or payment_method == None:
-        #         records = Order.objects.all()
-        #         Previous.status = True
-        #         records.delete()
-        #         return redirect("homepage")
-        #     else:
-        #         return redirect('razorInte')
+        #     print(value)
+        #     records = Order.objects.all()
+        #     Previous.status = True
+        #     records.delete()
+        #     return redirect('homepage')
 
-                # client = razorpay.Client(auth=(settings.KEY, settings.SECRET))
-                # data = {"amount": total * 100, "currency": "INR",'payment_capture':1}
-                # payment = client.order.create(data=data)
-                # orders.razorpay_order_id = payment['id']
-                # Order.place_order
-                # print('payment', payment)
-                # # Payment.order_dict['payment'] = payment
-                # return render(request,'payment_sum_razor.html',{'payment':payment,'total':total})
 
     @staticmethod
     def gst_price(price):
@@ -640,20 +610,20 @@ class Payment(View):
         return after_tax
 
 def razorInte(request):
-    # if request.method == "POST":
-    #             # key_id = 'rzp_test_nFQnwxZOOLoAND'
-    #             # key_secret = 'xHH4R8bNVv7bOjsoKnpC0n0H'
-
-    #             client = razorpay.Client(auth=(key_id, key_secret))
-
-    #             data = {"amount": 500 * 100, "currency": "INR",'payment_capture':1}
-    #             payment = client.order.create(data=data)
-    #             # order_obj.razorpay_order_id = payment['id']
-    #             # order_obj.save()
-    #             print('payment', payment)
-
-    # return render(request,'payment_sum_razor.html')
-    pass
+                client = razorpay.Client(auth=(settings.KEY, settings.SECRET))
+                total = request.session.get("total_product")
+                data = {"amount": total * 100, "currency": "INR",'payment_capture':1}
+                payment = client.order.create(data=data)
+                customer = request.session.get("customer")
+                orders = Order.get_orders_by_customer(
+                customer)
+                orders.razorpay_order_id = payment['id']
+                Payment.order_dict['value'] = None
+                Order.place_order
+                print('payment', payment)
+                # Payment.order_dict['payment'] = payment
+                # return redirect('success')
+                return render(request,'payment_sum_razor.html',{'payment':payment,'total':total})
                 
 
 class History(View):
@@ -663,10 +633,11 @@ class History(View):
         history = Previous.get_orders_by_customer(
             customer)  # taking from model Order
         # order_id = r.randint(1000000000, 9000000000)
+        
         print(history)
 
         order_dict = {
-            'orders': history
+            'orders': history,
         }
         return render(request, 'orderHistory.html', order_dict)
 

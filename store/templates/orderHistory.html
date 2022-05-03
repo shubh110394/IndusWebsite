@@ -17,7 +17,7 @@
                     <th>Image</th>
                     <th>Product</th>
                     <th>Price</th>
-                    <th>Date of Order</th>
+                    <th>Date and time</th>
                     <th>Quantity</th>
                     <th>Total</th>
                     <th>orderId</th>
@@ -33,6 +33,7 @@
                     <td>{{order.product.name}}</td>
                     <td>{{order.price}}</td>
                     <td>{{order.date}}</td>
+                    <td>{{order.date_time}}</td>
                     <td>{{order.quantity}}</td>
                     <td>{{order.quantity|multiply:order.price}}</td>
                     <td>{{order.order_id}}</td>

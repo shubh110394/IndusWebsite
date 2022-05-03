@@ -9,7 +9,21 @@
       <div class="card-body">
         <h5 class="card-title mb-3">Choose any one payment method</h5>
         <!-- <p class="card-text">With supporting text below as a natural lead-in to additional content.</p> -->
-        <form action="/payment" method="POST">
+
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" onclick="radio_select(1)">
+          <label class="form-check-label" for="flexRadioDefault1">
+            Payment using razorpay
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" onclick="radio_select(2)">
+          <label class="form-check-label" for="flexRadioDefault2">
+            Pay on delivery
+          </label>
+        </div>
+
+        <!-- <form action="/payment" method="POST">
           {%csrf_token%}
           {%if error_message%}
           <div class="alert alert-primary" role="alert">
@@ -34,7 +48,8 @@
           <input type="submit" class="btn btn-info" value="Confirm Payment Method">
 
 
-        </form>
+        </form> -->
+        
 
 
 
@@ -52,9 +67,9 @@
       <div class="card-body">
         <h5 class="card-title ">Customer Bill</h5>
         <ul class="list-group">
-          <li class="list-group-item d-flex justify-content-between align-items-center">
+          <li class="list-group-item d-flex justify-content-between align-items-center ">
             Product Name
-            <span class="badge text-primary">{{product}}</span>
+            <span class="badge text-primary text-wrap text-end">{{product}}</span>
           </li>
 
           <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -86,7 +101,21 @@
           </li>
         </ul>
 
-        {%if error_message or value == None %}
+        <!-- {%if value == "Cash" %}
+        <input hidden type="text" id="input_tag" class="btn btn-info" name="payment_method" value="{{value}}">
+        <input type="submit" name="" id="" data-bs-toggle="modal" data-bs-target="#exampleModal"
+        class="btn btn-info fs-3 text  border rounded col-lg-8  mt-3" value="Place order and Pay">
+        {%else%}
+        <form action="" method="POST">
+          {%csrf_token%}
+          <input hidden type="text" id = "input_tag" class="btn btn-info" name="payment_method" value="{{value}}">
+          <input type="submit" name="" id=""
+          class="btn btn-info fs-3 text  border rounded col-lg-8  mt-3" value="Place order and Pay">
+        </form>
+        {%endif%} -->
+        <input type="button" class="btn btn-secondary p-4 mt-3" id="pay_select" value="Place Order" onclick="pay_select()">
+
+        <!-- {%if error_message or value == None %}
         {%if value == None%}
         <div class="alert alert-danger border" role="alert">
           <strong>Alert: Please select payment method</strong>
@@ -112,11 +141,9 @@
           <input type="submit" name="" id=""
           class="btn btn-info fs-3 text  border rounded col-lg-8  mt-3" value="Place order and Pay">
         </form>
-        <!-- <button type="submit" name="" id="rzp-button1"
-        class="btn btn-outline-info fs-3 text  border rounded col-lg-8  mt-3">Place order and Pay</button> -->
         {%endif%}
 
-        {%endif%}
+        {%endif%} -->
 
       </div>
     </div>
@@ -166,6 +193,45 @@
 
 <script>
   document.getElementById("input_tag").defaultValue = None
+  // var pay = document.getElementById('pay_select')
+  var glob_var = 0
+  function radio_select(x){
+    if(x == 1){
+      glob_var = 1
+      document.getElementById('pay_select').style.background = '#81d4fa'
+      document.getElementById('pay_select').style.color = 'black'
+      document.getElementById('pay_select').style.padding = "6%"
+      document.getElementById('pay_select').style.border = "None"
+      // document.getElementById('pay_select').style.fontSize = "1.5rem"
+
+
+    }
+    if(x == 2){
+      glob_var = 2
+      document.getElementById('pay_select').style.background = '#81d4fa'
+      document.getElementById('pay_select').style.color = 'black'
+      document.getElementById('pay_select').style.padding = "6%"
+      document.getElementById('pay_select').style.border = "None"
+      // document.getElementById('pay_select').style.fontSize = "1.5rem"
+
+    }
+  }
+
+
+  function pay_select(){
+    localStorage.setItem("pay_option", glob_var);
+    if(glob_var != 1 && glob_var != 2) {
+      document.getElementById('pay_select').style.display = "block"
+      alert('select payment method first')
+    }
+    else if(glob_var === 1){
+      window.location.href = "http://127.0.0.1:8000/razorInte/";
+    }
+    else if (glob_var === 2){
+      window.location.href = "http://127.0.0.1:8000/success/";
+    }
+
+  }
 </script>
 
 {%endblock%}

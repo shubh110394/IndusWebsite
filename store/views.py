@@ -23,6 +23,8 @@ from reportlab.lib.pagesizes import letter
 from io import BytesIO
 from xhtml2pdf import pisa
 import datetime
+#email
+from .mail import Mailing
 
 # Create your views here
 
@@ -30,6 +32,9 @@ class Index(View):
     def get(self, request):
         cus_id = request.session.get("customer")
         customer = Customer.get_customers_by_id(cus_id)
+        orders = Order.get_orders_by_customer(
+                    cus_id)
+        
         dict_val = {}
         for cus in customer:
             # print(cus)
@@ -79,9 +84,6 @@ class Index(View):
         customer = request.session.get("customer")
         if product_id:
             if customer:
-
-                orders = Order.get_orders_by_customer(
-                    customer)
                 customerObj = Customer.get_customers_by_id(customer)
                 dict_val = {}
                 for cus in customerObj:
@@ -91,6 +93,8 @@ class Index(View):
 
                 order_id = r.randint(1000000000, 9000000000)
                 products = Product.get_all_products_by_id(product_id)
+                records = Order.objects.all()
+                records.delete()
                 for product in products:
                     order = Order(customer=Customer(id=customer), product=product, price=product.price,
                                   quantity=1, order_id=order_id)
@@ -99,15 +103,24 @@ class Index(View):
                     history = Previous(customer=Customer(id=customer), product=product, price=product.price,
                                        quantity=1, order_id=order_id)
                     history.save()
-                order_dict = {
-                    'orders': orders,
-                    # 'dict_val':dict_val
-                }
+                # for order in orders:
+                #     print('in')
+                #     same = order.product.name
+                #     # print('order',order.id)
+                #     for o2 in orders:
+  
+                #         if order.id < o2.id:
+                #             if order.product.name == o2.product.name:
+                #                 print('o2',o2.product.name)
+                                # order.quantity += 1
+                                # record = Order.objects.get(id=o2.id)
+                                # record.delete()
                 # return render(request,"orders.html",order_dict)
                 return redirect("orders")
             else:
                 return redirect("login")
         if cart:
+            
             quantity = cart.get(product)
             if quantity:
                 if remove:
@@ -378,6 +391,8 @@ class Cart(View):
         address = None
         radio_val = None
         products = Product.get_all_products_by_id(list(cart.keys()))
+        records = Order.objects.all()
+        records.delete()
         for product in products:
             order = Order(customer=Customer(id=customer), product=product, price=product.price,
                           phone=phone, quantity=cart.get(str(product.id)), order_id=order_id)
@@ -451,6 +466,7 @@ class Orders(View):
         now = datetime.datetime.now()
 
         dict_val = {}
+
         for cus in customerObj:
             dict_val['address1'] = cus.address1
             dict_val['address2'] = cus.address2
@@ -656,11 +672,17 @@ def success(request):
         context = {}
         total = 0
         trans_id = None
+        f_name = ""
+        l_name = ""
+        id = ""
         for order in orders:
             num = order.quantity
             price = num * order.price
             total += price
             trans_id = order.razorpay_order_id
+            f_name = order.customer.first_name
+            l_name = order.customer.last_name
+            id = order.order_id
         
         request.session['transaction_id'] = trans_id
         price = request.session.get('ultimate_total')
@@ -677,6 +699,14 @@ def success(request):
             context['orderId'] = order.order_id
         # print(context)
         Previous.status_change(order_id)
+        mydict = {
+            'username': f_name + l_name,
+            'order_id':id,
+            'orders':orders,
+            'total':price
+        }
+        Mailing.mailing_function(mydict)
+        # Previous.optimize(customer)
         return render(request,'success.html',context)
 
 

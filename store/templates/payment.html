@@ -23,36 +23,6 @@
           </label>
         </div>
 
-        <!-- <form action="/payment" method="POST">
-          {%csrf_token%}
-          {%if error_message%}
-          <div class="alert alert-primary" role="alert">
-            <strong>{{error_message}}</strong>
-          </div>
-          {%endif%}
-          <div  class="form-check mb-3">
-
-            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value="Razorpay"
-            >
-            <label class="form-check-label" for="flexRadioDefault2">
-              Pay with Razorpay
-            </label>
-          </div>
-          <div  class="form-check mb-3">
-            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value="Cash"
-              >
-            <label class="form-check-label" for="flexRadioDefault2">
-              Pay on Delivery
-            </label>
-          </div>
-          <input type="submit" class="btn btn-info" value="Confirm Payment Method">
-
-
-        </form> -->
-        
-
-
-
         <!-- end of radio logic -->
       </div>
 
@@ -101,50 +71,7 @@
           </li>
         </ul>
 
-        <!-- {%if value == "Cash" %}
-        <input hidden type="text" id="input_tag" class="btn btn-info" name="payment_method" value="{{value}}">
-        <input type="submit" name="" id="" data-bs-toggle="modal" data-bs-target="#exampleModal"
-        class="btn btn-info fs-3 text  border rounded col-lg-8  mt-3" value="Place order and Pay">
-        {%else%}
-        <form action="" method="POST">
-          {%csrf_token%}
-          <input hidden type="text" id = "input_tag" class="btn btn-info" name="payment_method" value="{{value}}">
-          <input type="submit" name="" id=""
-          class="btn btn-info fs-3 text  border rounded col-lg-8  mt-3" value="Place order and Pay">
-        </form>
-        {%endif%} -->
-        <input type="button" class="btn btn-secondary p-4 mt-3" id="pay_select" value="Place Order" onclick="pay_select()">
-
-        <!-- {%if error_message or value == None %}
-        {%if value == None%}
-        <div class="alert alert-danger border" role="alert">
-          <strong>Alert: Please select payment method</strong>
-        </div>
-        {%else%}
-        <div class="alert alert-primary border" role="alert">
-          <strong>{{error_message}}</strong>
-        </div>
-        {%endif%}
-
-        <input type="submit" name="" id=""
-        class="btn btn-outline-info fs-3 text  border rounded col-lg-8  mt-3" disabled value="Place order and Pay">
-
-        {%else%}
-        {%if value == "Cash" %}
-        <input hidden type="text" id="input_tag" class="btn btn-info" name="payment_method" value="{{value}}">
-        <input type="submit" name="" id="" data-bs-toggle="modal" data-bs-target="#exampleModal"
-        class="btn btn-info fs-3 text  border rounded col-lg-8  mt-3" value="Place order and Pay">
-        {%else%}
-        <form action="" method="POST">
-          {%csrf_token%}
-          <input hidden type="text" id = "input_tag" class="btn btn-info" name="payment_method" value="{{value}}">
-          <input type="submit" name="" id=""
-          class="btn btn-info fs-3 text  border rounded col-lg-8  mt-3" value="Place order and Pay">
-        </form>
-        {%endif%}
-
-        {%endif%} -->
-
+        <input type="button" class="btn btn-secondary mt-3 float-end px-3" id="pay_select" value="Place Order" onclick="pay_select()">
       </div>
     </div>
 
@@ -164,7 +91,7 @@
         <hr>
         <form action="" method="POST">
           {%csrf_token%}
-          <!-- <a href="/"><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></a> -->
+          
           <input hidden type="text" class="btn btn-info mb-2 mt-0 ml-0" name="gohome" value="Be ready with the change" id="">
           <br>
           <input type="submit" value="" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
@@ -181,7 +108,6 @@
       </div>
       <form action="" class="mx-auto mb-2" method="POST">
         {%csrf_token%}
-        <!-- <a class="btn btn-info col-lg-5 mx-auto mb-3" href="/">Go to homepage</a> -->
         <input hidden type="text" class="btn btn-info mb-2 mt-0 ml-0" name="gohome" value="Be ready with the change" id="">
         <br>
         <input type="submit" class="btn btn-info ml-4"  value="Go to homepage">
@@ -200,7 +126,9 @@
       glob_var = 1
       document.getElementById('pay_select').style.background = '#81d4fa'
       document.getElementById('pay_select').style.color = 'black'
-      document.getElementById('pay_select').style.padding = "6%"
+      document.getElementById('pay_select').style.float = "right"
+      document.getElementById('pay_select').style.paddingLeft = "8%"
+      document.getElementById('pay_select').style.paddingRight = "8%"
       document.getElementById('pay_select').style.border = "None"
       // document.getElementById('pay_select').style.fontSize = "1.5rem"
 
@@ -210,7 +138,9 @@
       glob_var = 2
       document.getElementById('pay_select').style.background = '#81d4fa'
       document.getElementById('pay_select').style.color = 'black'
-      document.getElementById('pay_select').style.padding = "6%"
+      document.getElementById('pay_select').style.float = "right"
+      document.getElementById('pay_select').style.paddingLeft = "8%"
+      document.getElementById('pay_select').style.paddingRight = "8%"
       document.getElementById('pay_select').style.border = "None"
       // document.getElementById('pay_select').style.fontSize = "1.5rem"
 

@@ -16,10 +16,10 @@
                     <th>Sno.</th>
                     <th>Image</th>
                     <th>Product</th>
-                    <th>Price</th>
+                    <th>Product Price</th>
                     <th>Date and time</th>
                     <th>Quantity</th>
-                    <th>Total</th>
+                    <th>Total Price</th>
                     <th>orderId</th>
                     <!-- <th>Status</th> -->
                     
@@ -31,11 +31,10 @@
                     <td>{{forloop.counter}}</td>
                     <td><img style="height: 80px;" class="rounded-circle" src="{{order.product.image.url}}" alt=""></td>
                     <td>{{order.product.name}}</td>
-                    <td>{{order.price}}</td>
-                    <td>{{order.date}}</td>
+                    <td>{{order.price}} INR</td>
                     <td>{{order.date_time}}</td>
                     <td>{{order.quantity}}</td>
-                    <td>{{order.quantity|multiply:order.price}}</td>
+                    <td>{{order.quantity|multiply:order.price}} INR</td>
                     <td>{{order.order_id}}</td>
                     <!-- {% if order.status %}
                     <td class="badge bg-success mt-2">Completed</td>

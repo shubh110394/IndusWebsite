@@ -28,7 +28,7 @@
                         <img src="{{prod.image.url}}" class="card-img-top" alt="...">
                         <div class="card-body">
                             <h5 class="card-title">{{prod.name}}</h5>
-                            <p class="card-text"><b>{{prod.price}}</b></p>
+                            <p class="card-text"><b class="text-primary">{{prod.price}} INR</b></p>
                             <!-- {{prod | is_in_cart:request.session.cart}} -->
 
                         </div>
@@ -68,31 +68,10 @@
                               <input hidden type="text" name="product_key" value="{{prod.id}}">
                               <input  type="submit" class="btn btn-info border form-control" name="product_submit2" value="Buy Now" />
                             </form>
-                            <!-- {% if request.session.customer%}
-                            <input href="#" data-bs-toggle="modal" data-bs-target="#exampleModal" name="product_submit" type="submit" class="btn btn-info border form-control" value="Buy Now" />
-                            {%else%}
-                            <input href="#" type="submit" class="btn btn-secondary border form-control" name="product_submit2" value="Buy Now" />
-                            {%endif%} -->
 
 
                         </div>
-                        <!-- <div class="card-footer p-0 row g-0">
-                            <form action="/" method="POST" class="btn-block">
-                                {%csrf_token%}
-                                <input hidden type="text" name="product" value="{{prod.id}}">
-                                <input href="#" type="submit" class="float-right btn btn-light border btn-sm" value="Add to Cart" />
-                                <input href="#" type="submit" class="float-right btn btn-light border btn-sm" value="Buy Now" />
-                            </form>
-                            <div class="row" hidden>
-                                <input type="submit" value="-" class="col-2 btn btn-block btn-secondary">
-                                <div class="text-center col">2 in cart</div>
-                                <input type="submit" value="+" class="col-2 btn btn-block btn-secondary ">
-                            </div>
-
-                        </div> -->
-
                     </div>
-                    <!-- <input href="#" data-bs-toggle="modal" data-bs-target="#exampleModal" type="submit" class="btn btn-info border form-control" name="product_submit2" value="Buy Now" /> -->
                 </div>
                 
                 {% endfor %}

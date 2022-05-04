@@ -132,5 +132,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL = "/download/"
 MEDIA_ROOT = BASE_DIR
 
+#SMTP configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'dummypythonproject1234@gmail.com'
+EMAIL_HOST_PASSWORD = 'Indusnettech'
+
 KEY = "rzp_test_nFQnwxZOOLoAND"
 SECRET = 'xHH4R8bNVv7bOjsoKnpC0n0H'

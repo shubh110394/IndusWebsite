@@ -540,6 +540,10 @@ class Payment(View):
         gst = Payment.gst_price(total)
 
         request.session['tax_gst'] = gst
+        word = "https://www.google.com/maps/embed/v1/place?key=AIzaSyA7rMHhqLNVSktWTyiUMtklVwA-HRZvG4M&q="
+        new_add = add.split(',')
+        split_add = new_add[1:]
+        address_location = word + add
         nam = ""
         for order in orders:
             nam += order.product.name + ","
@@ -551,7 +555,8 @@ class Payment(View):
             Payment.order_dict['toPay'] = Payment.gst_price(
                 total) + total + 100
             ultimate_total = Payment.gst_price(total) + total + 100
-            Payment.order_dict['address'] = add
+            Payment.order_dict['address'] = address_location
+            Payment.order_dict['address_name'] = add
         # print(Payment.order_dict)
         Payment.order_dict['error_message'] = error_message
         request.session['total_product'] = total
@@ -675,6 +680,7 @@ def success(request):
         f_name = ""
         l_name = ""
         id = ""
+        email = ""
         for order in orders:
             num = order.quantity
             price = num * order.price
@@ -683,6 +689,7 @@ def success(request):
             f_name = order.customer.first_name
             l_name = order.customer.last_name
             id = order.order_id
+            email = order.customer.email
         
         request.session['transaction_id'] = trans_id
         price = request.session.get('ultimate_total')
@@ -705,7 +712,7 @@ def success(request):
             'orders':orders,
             'total':price
         }
-        Mailing.mailing_function(mydict)
+        Mailing.mailing_function(mydict,email)
         # Previous.optimize(customer)
         return render(request,'success.html',context)
 

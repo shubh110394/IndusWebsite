@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.template.loader import render_to_string
 
 class Mailing:
-    def mailing_function(mydict):
+    def mailing_function(mydict,email):
         print(mydict)
         html_template = 'emailinvoice.html'
         # mydict = {'user':'shubham'}
@@ -16,10 +16,10 @@ class Mailing:
             subject,
             html_message,
             email_from,
-            ['shubham.shrivastava@indusnet.co.in']
+            [email]
         )
         email.content_subtype = 'html'
-        # email.send()
+        email.send()
         print('went')
         return None
 

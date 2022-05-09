@@ -1,23 +1,66 @@
-<div style="background-color: rgb(228, 228, 228);">
-    <div style="margin: 20px; background-color: #fff;">
+{% extends 'base_without_nav.html' %}
 
-Hi {{ username }},
-Your order with order id: {{order_id}} has been placed successfully.
+{%block content%}
+{%load cart%}
 
-Your order consists of - 
-{% for i in orders %}
-Product:{{i.product.name}} Quantity:{{i.quantity}} Price:{{i.price}}
-{% endfor %}
-Total:{{total}}INR
+<div class="row mt-5 mx-auto d-flex justify-content-center ">
+  <div class="col-lg-6 ">
+    <div class="card">
+      <div class="card-body bg-success p-4 bg-opacity-25 text-dark text-center">
+        <h1>Indus Net Website</h1>
+        <h4>Order is successfully placed</h4>
+        <p style="text-align: start;">GSTIN NO. <strong style="color: blue;">37AADCB2230M2ZR</strong></p>
+        <br>
+        <div class="border border-dark p-2 mb-2">
+          <h5 class="card-title ">Customer Bill</h5>
+          <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Product Name
+              <span class="badge text-primary text-wrap text-end">{{product}}</span>
+            </li>
 
-Order will reach to you in 5-7 days.
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Order Date
+              <span class="badge text-primary">{{date}}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              OrderID
+              <span class="badge text-primary">{{orderId}}</span>
+            </li>
+          </ul>
 
-We have attached the invoice for your order with this mail.
+          <ul class="list-group mt-4">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Gross Total
+              <span class="badge text-primary">{{total}} INR</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Shipping and packing charges
+              <span class="badge text-primary">100 INR</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Taxes @12%
+              <span class="badge text-primary">{{tax}} INR</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Payment method
+              <span class="badge text-primary" id="pay_opt_id"></span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span id = "amount_paid"></span>
+              <span class="badge text-primary">{{ultimate_total}} INR</span>
+            </li>
+          </ul>
 
-Thanks for trusting us and using our services!
+        </div>
 
-Sincerely,
-IndusShopping Team
+        <a class="btn btn-info signup-button mb-2" href="{% url 'pdf_view' %}" target="_blank">View Invoice Now</a>
+        <form action="" method="POST">
+          {%csrf_token%}
+          <input type="submit" class="btn btn-info btn-block" value="Go Back to home page">
+        </form>
 
+      </div>
     </div>
-</div>
+  </div>
+  {% endblock %}
